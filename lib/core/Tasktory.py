@@ -2,18 +2,29 @@
 
 import os, pickle
 from lib.core.Task import Task
+from lib.core.Memo import Memo
 
 class Tasktory(Task):
 
     PROFILE = '.tasktory'
+    MEMO = 'memo.txt'
+
+    #==========================================================================
+    # コンストラクタ
+    #==========================================================================
+    def __init__(self, path, deadline, status, comment):
+        # タスクを作成する
+        super().__init__(deadline, status, comment)
+        self.path = path
+        self.memo = Memo(path, type(self).MEMO)
 
     #==========================================================================
     # 属性値アクセス
     #==========================================================================
-    def __setattr__(self, key, value):
-        self.__dict__[key] = value
-        if key in ('deadline', 'status'): self.sync()
-        return
+    #def __setattr__(self, key, value):
+    #    self.__dict__[key] = value
+    #    if key in ('deadline', 'status'): self.sync()
+    #    return
 
     #==========================================================================
     # コンテナエミュレート
@@ -34,11 +45,17 @@ class Tasktory(Task):
             pickle.dump(self, f)
         return
 
-    def punch(self, start, sec):
-        """作業時間を追加した後、ファイルシステムと同期する"""
-        super().punch(start, sec)
+    def merge(self, other):
+        """タスクの差分をマージする"""
+        super().merge(other)
         self.sync()
         return
+
+    #def punch(self, start, sec):
+    #    """作業時間を追加した後、ファイルシステムと同期する"""
+    #    super().punch(start, sec)
+    #    self.sync()
+    #    return
 
     #==========================================================================
     # ツリー参照系
@@ -61,13 +78,9 @@ class Tasktory(Task):
     # タスク作成系クラスメソッド
     #==========================================================================
     @classmethod
-    def new(cls, path, deadline, status):
-        """ディレクトリパスを指定してタスクを作成する"""
-        # タスクを作成する
-        task = cls.__init__(deadline, status)
-        task.path = os.path.abspath(path)
-
-        # ファイルシステムと同期する
+    def new(cls, path, deadline, status, comment):
+        """"""
+        task = cls(path, deadline, status)
         task.sync()
         return task
 
