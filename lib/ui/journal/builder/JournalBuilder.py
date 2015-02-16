@@ -18,7 +18,7 @@ class JournalBuilder:
         self.config = config
 
     def build(self, date, tasks):
-        self.tcb = TaskChunkBuilder(date, config)
+        self.tcb = TaskChunkBuilder(date, self.config)
         return self.template.substitute({
             'YEAR': date.year, 'MONTH': date.month, 'DAY': date.day,
             'OPENCHUNK': self.tcb.build(

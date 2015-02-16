@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime, re
+from lib.core.Tasktory import Tasktory
 from lib.common.Regexplate import Regexplate
 from lib.ui.journal.parser.TaskChunkParser import TaskChunkParser
 from lib.ui.journal.parser.MemoParser import MemoParser
@@ -23,9 +24,12 @@ class JournalParser:
 
         # 各タスクチャンクをパース
         tcp = TaskChunkParser(date, self.config)
-        tasks = [ps(d,Tasktory.OPEN) for d in tcp.parse(attrs['OPENCHUNK'])]
-        tasks += [ps(d,Tasktory.WAIT) for d in tcp.parse(attrs['WAITCHUNK'])]
-        tasks += [ps(d,Tasktory.CLOSE) for d in tcp.parse(attrs['CLOSECHUNK'])]
+        tasks = [self.ps(d,Tasktory.OPEN)
+                for d in tcp.parse(attrs['OPENCHUNK'])]
+        tasks += [self.ps(d,Tasktory.WAIT)
+                for d in tcp.parse(attrs['WAITCHUNK'])]
+        tasks += [self.ps(d,Tasktory.CLOSE)
+                for d in tcp.parse(attrs['CLOSECHUNK'])]
 
         # メモを取得
         memo = self.mp.parse(attrs['MEMO'])

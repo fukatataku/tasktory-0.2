@@ -41,15 +41,15 @@ class Tasktory(Task):
     def sync(self):
         """ファイルシステムに自身を保存する"""
         if not os.path.exists(self.path): os.makedirs(self.path)
-        with open(os.path.join(self.path, PROFILE), 'wb') as f:
+        with open(os.path.join(self.path, self.PROFILE), 'wb') as f:
             pickle.dump(self, f)
-        return
+        return self
 
     def merge(self, other):
         """タスクの差分をマージする"""
         super().merge(other)
         self.sync()
-        return
+        return self
 
     #def punch(self, start, sec):
     #    """作業時間を追加した後、ファイルシステムと同期する"""
@@ -87,7 +87,7 @@ class Tasktory(Task):
     @classmethod
     def restore(cls, path):
         """ディレクトリパスを指定してタスクを復元する"""
-        profile = os.path.join(path, PROFILE)
+        profile = os.path.join(path, cls.PROFILE)
         if not os.path.isfile(profile): return None
         with open(profile, 'rb') as f:
             task = pickle.load(f)

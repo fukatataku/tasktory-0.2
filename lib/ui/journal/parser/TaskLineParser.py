@@ -14,14 +14,13 @@ class TaskLineParser:
     """タスクライン解析器"""
 
     def __init__(self, date, config):
-        self.root = config['Main']['ROOT']
         self.dlp = DeadLineParser(date, config)
         self.ttp= TimeTableParser(date, config)
         self.template = Regexplate(config['Journal']['TASKLINE'])
 
     def parse(self, string):
         attrs = self.template.parse(string)
-        return {'PATH': self.root + attrs['PATH'],
+        return {'PATH': attrs['PATH'],
                 'DEADLINE': self.dlp.parse(attrs['DEADLINE']),
                 'TIMETABLE': self.ttp.parse(attrs['TIMETABLE'])}
 
