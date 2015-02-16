@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #C:/python/python3.4/python
 # -*- coding: utf-8 -*-
 
@@ -18,7 +19,7 @@ class TasktoryBuilder:
 
     def build(self, attrs):
         names = attrs['PATH'].split('/')
-        paths = convolute(lambda p,a: (a+'/'+p,)*2, names[1:], names[0])
+        paths = convolute(lambda p,a: (a+'/'+p if a+p else p,)*2, names, '')
         tasks = [self.node(p, attrs) for p in paths]
         return tasks[-1], tasks[:-1]
 
