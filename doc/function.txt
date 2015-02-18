@@ -1,0 +1,20 @@
+[Function List]
+* Tasktory (CORE)
+* Journal
+* Report
+* Monitor
+  - AutoCheckout
+  - AutoCommit
+* TrayIcon
+  - PopupMessage
+  - GenerateReport
+  - Quit
+* WebServer
+  - GenerateReport
+  - TasktoryMenagement
+    - TasktoryCombine
+  - TagAnalysis
+* StandAlone
+* IconOverlay
+* Archive
+* Log

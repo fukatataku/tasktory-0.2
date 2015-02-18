@@ -6,11 +6,11 @@ class JournalFilter:
     """ジャーナル書き出し用タスクフィルタ"""
 
     def ok(self, task):
-        if task.status == Tasktory.OPEN:
+        if task.status == Task.OPEN:
             return False if task.deadline == float('inf') else True
-        elif task.status == Tasktory.WAIT:
+        elif task.status == Task.WAIT:
             return True
-        elif task.status == Tasktory.CLOSE:
+        elif task.status == Task.CLOSE:
             return False
         else:
             return False

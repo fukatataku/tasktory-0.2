@@ -1,4 +1,4 @@
-#!C:/python/python3.4/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # For test
@@ -6,7 +6,7 @@ import sys, os, datetime
 path = lambda p:os.path.abspath(os.path.join(os.path.dirname(__file__), p))
 sys.path.append(path('../../../'))
 
-import os
+import os, datetime
 from lib.core.Tasktory import Tasktory
 from lib.ui.journal.builder.JournalBuilder import JournalBuilder
 from lib.ui.journal.builder.TasktoryBuilder import TasktoryBuilder
@@ -50,20 +50,33 @@ class Journal:
         date, attrs_list, memo = self.jp.parse(self.text)
 
         # ファイルシステムにコミットする
-        for attrs in attrs_list:
-            leaf, inners = self.tb.build(attrs)
+        for attrs in attrs_list: self.commit_one(date, attrs)
 
-            # 葉ノードタスクトリをコミットする
-            org = Tasktory.restore(leaf.path)
-            if org is None:
-                leaf.sync()
-            else:
-                org.merge(leaf).sync()
+        # TODO: メモをコミットする
 
-            # 内部ノードタスクトリをコミットする
-            for t in inners:
-                org = Tasktory.restore(t.path)
-                if org is None: t.sync()
+    def commit_one(self, date, attrs):
+        leaf, inners = self.tb.build(attrs)
+
+        # 葉ノードタスクトリをコミットする
+        org = Tasktory.restore(leaf.path)
+        if org is None:
+            leaf.sync()
+        else:
+            # マージする前に当日の作業時間を削除する
+            org.timetable =\
+                    [t for t in org.timetable if not self.at(date, t[0])]
+            org.merge(leaf).sync()
+
+        # 内部ノードタスクトリをコミットする
+        for t in inners:
+            org = Tasktory.restore(t.path)
+            if org is None: t.sync()
+
+    @staticmethod
+    def at(date, ts):
+        a = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
+        b = a + datetime.timedelta(1)
+        return int(a.timestamp()) <= ts and ts < int(b.timestamp())
 
 if __name__ == '__main__':
     # コンフィグ
@@ -74,5 +87,7 @@ if __name__ == '__main__':
     config.read(MAIN_CONF_FILE)
 
     journal = Journal(config)
+    journal.commit()
     journal.checkout(today)
-    #journal.commit()
+
+    print(datetime.datetime.now())

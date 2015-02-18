@@ -66,7 +66,8 @@ class Tasktory(Task):
 
     def children(self):
         """子タスクのリストを返す。無ければ空リストを返す"""
-        children = [type(self).restore(p) for p in os.listdir(self.path)]
+        children = [type(self).restore(self.path + '/' + p)
+                for p in os.listdir(self.path)]
         return [c for c in children if c]
 
     def level(self):
@@ -87,6 +88,7 @@ class Tasktory(Task):
     @classmethod
     def restore(cls, path):
         """ディレクトリパスを指定してタスクを復元する"""
+        if not os.path.isdir(path): return None
         profile = os.path.join(path, cls.PROFILE)
         if not os.path.isfile(profile): return None
         with open(profile, 'rb') as f:
