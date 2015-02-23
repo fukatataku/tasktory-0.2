@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import os
 import win32api, win32gui, win32con
 
 class TrayIcon:
 
     TITLE = 'TrayIcon'
 
-    def __init__(self, imgfile):
+    def __init__(self, imgfile, msg, menu):
         # Create window procedure
         self.wp = {
                 win32con.WM_DESTROY: self.destroy,
@@ -49,6 +48,8 @@ class TrayIcon:
         win32gui.PumpMessages()
 
     def destroy(self, hwnd, msg, wparam, lparam):
+        win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
+        win32gui.PostQuitMessage(0)
         return
 
     def command(self, hwnd, msg, wparam, lparam):
