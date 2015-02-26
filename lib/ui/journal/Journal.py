@@ -47,12 +47,15 @@ class Journal:
             self.text = f.read()
 
         # ジャーナルを解析する
-        date, attrs_list, memo = self.jp.parse(self.text)
+        date, attrs_list, memo_list = self.jp.parse(self.text)
 
         # ファイルシステムにコミットする
         for attrs in attrs_list: self.commit_one(date, attrs)
 
-        # TODO: メモをコミットする
+        # メモをコミットする
+        for memo in memo_list:
+            Tasktory.restore(memo['PATH']).memo.put(
+                    datetime.datetime.now(), memo['TEXT'])
 
     def commit_one(self, date, attrs):
         leaf, inners = self.tb.build(attrs)
