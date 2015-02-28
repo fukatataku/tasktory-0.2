@@ -29,6 +29,10 @@ class Journal:
         self.journal = config['Main']['JOURNAL']
 
     def checkout(self, date):
+        # TODO チェックアウト時にメモを残す？
+        # 既存のジャーナルからメモを読み出す
+        #_, _, memo_list = self.read_journal()
+
         # ファイルシステムからタスクを復元する
         root_task = Tasktory.restore(self.root)
         tasks = [] if root_task is None\
@@ -41,13 +45,21 @@ class Journal:
         with open(self.journal, 'w', encoding='utf-8') as f:
             f.write(self.jb.build(date, tasks))
 
-    def commit(self):
+    def read_journal(self):
+        # ジャーナルが存在しなければNoneを返す?
+        if not os.path.isfile(self.journal):
+            return datetime.datetime.now(), [], []
+
         # ジャーナルを読み出す
         with open(self.journal, 'r', encoding='utf-8-sig') as f:
-            self.text = f.read()
+            text = f.read()
 
         # ジャーナルを解析する
-        date, attrs_list, memo_list = self.jp.parse(self.text)
+        return self.jp.parse(text)
+
+    def commit(self):
+        # ジャーナルを解析する
+        date, attrs_list, memo_list = self.read_journal()
 
         # ファイルシステムにコミットする
         for attrs in attrs_list: self.commit_one(date, attrs)
