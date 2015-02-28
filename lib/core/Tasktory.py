@@ -88,10 +88,17 @@ class Tasktory(Task):
     @classmethod
     def restore(cls, path):
         """ディレクトリパスを指定してタスクを復元する"""
-        if not os.path.isdir(path): return None
-        profile = os.path.join(path, cls.PROFILE)
-        if not os.path.isfile(profile): return None
-        with open(profile, 'rb') as f:
+        if not cls.istask(path): return None
+        with open(os.path.join(path, cls.PROFILE), 'rb') as f:
             task = pickle.load(f)
             task.path = os.path.abspath(path)
             return task
+
+    #==========================================================================
+    # 参照系クラスメソッド
+    #==========================================================================
+    @classmethod
+    def istask(cls, path):
+        """指定したディレクトリがタスクトリかどうか判定する"""
+        if not os.path.isdir(path): return False
+        return os.path.isfile(os.path.join(path, cls.PROFILE))

@@ -9,7 +9,6 @@ sys.path.append(path('../../../../'))
 from lib.common.common import convolute
 from lib.core.Tasktory import Tasktory
 from lib.ui.journal.parser.TaskLineParser import TaskLineParser
-#from lib.ui.journal.parser.PathAliasParser import PathAliasParser
 from lib.ui.journal.parser.CommentParser import CommentParser
 
 class TaskChunkParser:
