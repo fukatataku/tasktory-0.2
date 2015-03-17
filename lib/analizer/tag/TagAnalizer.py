@@ -25,16 +25,11 @@
 # 10.IT
 # 11.ST
 
-# For test
-import sys, os, datetime
-path = lambda p:os.path.abspath(os.path.join(os.path.dirname(__file__), p))
-sys.path.append(path('../../../'))
-
 import re
 from os import walk
 from os.path import join
 from lib.core.Tasktory import Tasktory
-from lib.common.common import convolute
+
 
 class TagAnalizer:
 
@@ -50,8 +45,8 @@ class TagAnalizer:
 
     def analize(self, root):
         # ルートパスからタスクトリ名一覧を取得する
-        paths = [(p,n) for p, names, _ in walk(root) for n in names]
-        tasknames = [n for p,n in paths if Tasktory.istask(join(p, n))]
+        paths = [(p, n) for p, names, _ in walk(root) for n in names]
+        tasknames = [n for p, n in paths if Tasktory.istask(join(p, n))]
 
         # 番号付き名前分離
         names = [self.r_name.match(n).group(1) for n in tasknames]
@@ -69,17 +64,3 @@ class TagAnalizer:
         dup_tags = list(set([n for n in names if names.count(n) > 1]))
 
         return ver_tags + rev_tags + num_tags + dup_tags + self.reg_tags
-
-if __name__ == '__main__':
-
-    # コンフィグ
-    import configparser
-    from lib.common.common import MAIN_CONF_FILE
-    today = datetime.date.today()
-    config = configparser.ConfigParser()
-    config.read(MAIN_CONF_FILE)
-
-    root = "/Users/taku/tmp/work"
-    ta = TagAnalizer(config)
-    tags = ta.analize(root)
-    print(tags)
