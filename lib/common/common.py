@@ -13,6 +13,7 @@ TMPL_DIR = os.path.join(RES_DIR, 'template')
 MAIN_CONF_FILE = os.path.join(CONF_DIR, 'main.conf')
 JRNL_TMPL_FILE = os.path.join(TMPL_DIR, 'journal.tmpl')
 
+
 def convolute(proc, iterable, start=0):
     rtn = []
     acc = start
@@ -20,4 +21,3 @@ def convolute(proc, iterable, start=0):
         result, acc = proc(value, acc)
         rtn.append(result)
     return rtn
-
