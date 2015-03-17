@@ -31,10 +31,21 @@ class TasktoryFilter:
         return unique_task_list
 
     @classmethod
-    def get_filter(cls, name_map):
-        cls_map = [cls.get_filter_list(name_list) for name_list in name_map]
+    def get_filter(cls, flt_config_section):
+        flt_map = []
+        for name in cls.__parse(flt_config_section['filters']):
+            flt_map.append(cls.__parse(flt_config_section[name]))
+        return cls.__get_filter(flt_map)
+
+    @classmethod
+    def __get_filter(cls, name_map):
+        cls_map = [cls.__filter_list(name_list) for name_list in name_map]
         return cls(cls_map)
 
     @staticmethod
-    def get_filter_list(name_list):
+    def __parse(string):
+        return [_.strip() for _ in string.split(',')]
+
+    @staticmethod
+    def __filter_list(name_list):
         return [FilterFactory.get_filter(name) for name in name_list]
