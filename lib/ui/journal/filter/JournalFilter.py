@@ -2,6 +2,7 @@
 
 from lib.core.Task import Task
 
+
 class JournalFilter:
     """ジャーナル書き出し用タスクフィルタ"""
 
