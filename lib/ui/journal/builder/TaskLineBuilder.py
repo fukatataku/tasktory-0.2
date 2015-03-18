@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# For test
-import sys, os, datetime
-path = lambda p:os.path.abspath(os.path.join(os.path.dirname(__file__), p))
-sys.path.append(path('../../../../'))
-
 from lib.common.Regexplate import Regexplate
 from lib.ui.journal.builder.DeadLineBuilder import DeadLineBuilder
 from lib.ui.journal.builder.TimeTableBuilder import TimeTableBuilder
+
 
 class TaskLineBuilder:
     """"""
@@ -34,16 +30,3 @@ class TaskLineBuilder:
             return path
         else:
             return path.replace(self.root, '')
-
-if __name__ == '__main__':
-    import configparser
-    from lib.core.Tasktory import Tasktory
-    today = datetime.date.today()
-    config_path = path('../../../../res/conf/main.conf')
-    config = configparser.ConfigParser()
-    config.read(config_path)
-
-    tlb = TaskLineBuilder(today, config)
-
-    t = Tasktory('C:/home/fukata/work/path/to/task', today.toordinal(), 0, '')
-    print(tlb.build(t))
