@@ -7,7 +7,7 @@ from lib.core.Tasktory import Tasktory
 from lib.ui.journal.builder.JournalBuilder import JournalBuilder
 from lib.ui.journal.builder.TasktoryBuilder import TasktoryBuilder
 from lib.ui.journal.parser.JournalParser import JournalParser
-from lib.filter.TasktoryFilter import TasktoryFilter
+from lib.utility.filter.TasktoryFilter import TasktoryFilter
 
 from lib.common.common import JRNL_TMPL_FILE
 

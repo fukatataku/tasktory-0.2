@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from lib.filter.filters import FilterFactory
+from lib.utility.filter.filters import FilterFactory
 
 
 class TasktoryFilter:
