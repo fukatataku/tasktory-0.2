@@ -79,7 +79,7 @@ class Journal:
         else:
             # マージする前に当日の作業時間を削除する
             org.timetable =\
-                    [t for t in org.timetable if not self.at(date, t[0])]
+                [t for t in org.timetable if not self.at(date, t[0])]
             org.merge(leaf).sync()
 
         # 内部ノードタスクトリをコミットする
