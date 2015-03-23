@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# For test
-import sys, os, datetime
-path = lambda p:os.path.abspath(os.path.join(os.path.dirname(__file__), p))
-sys.path.append(path('../../../../'))
-
 from lib.ui.journal.builder.TaskLineBuilder import TaskLineBuilder
 from lib.ui.journal.builder.CommentBuilder import CommentBuilder
+
 
 class TaskChunkBuilder:
 
@@ -24,18 +20,3 @@ class TaskChunkBuilder:
 
     def build_comment(self, comment):
         return ''.join([self.cb.build(c) + '\n' for c in comment.split('\n')])
-
-if __name__ == '__main__':
-    import configparser
-    from lib.core.Tasktory import Tasktory
-    today = datetime.date.today()
-    config_path = path('../../../../res/conf/main.conf')
-    config = configparser.ConfigParser()
-    config.read(config_path)
-
-    t0 = Tasktory('C:/home/fukata/work/path/to/task0', today.toordinal(), 0, '')
-    t1 = Tasktory('C:/home/fukata/work/path/to/task1', today.toordinal(), 0, 'hoge\nfuga')
-    t2 = Tasktory('C:/home/fukata/work/path/to/task2', today.toordinal(), 0, 'hoge\nfuga')
-
-    tcb = TaskChunkBuilder(today, config)
-    print(tcb.build([t0, t1, t2]))

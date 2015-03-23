@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime, date
+
 
 class Task:
 
@@ -30,6 +32,20 @@ class Task:
             return sum(sorted(self.timetable, key=lambda t: t[0])[-1])
         else:
             return 0
+
+    def at(self, _from, to=None):
+        """指定した期間に作業時間が計上されているかどうかを返す"""
+        if to is None:
+            to = _from
+        if isinstance(_from, date):
+            _from = int(datetime.fromordinal(_from.toordinal()).timestamp())
+        if isinstance(to, date):
+            to = int(datetime.fromordinal(to.toordinal() + 1).timestamp())
+
+        for s, t in self.timetable:
+            if _from < s+t and s <= to:
+                return True
+        return False
 
     def merge(self, other):
         """タスクの差分をマージする"""
