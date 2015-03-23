@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import win32api, win32gui, win32con
+import win32api
+import win32gui
+import win32con
+
 
 class TrayIcon:
 
@@ -10,9 +13,7 @@ class TrayIcon:
     MSG_POPUP = win32con.WM_USER + 21
     MSG_DESTROY = win32con.WM_USER + 22
 
-    #==========================================================================
     # コンストラクタ
-    #==========================================================================
     def __init__(self, imgfile, msg, menu):
         # Member
         self.msg = msg
@@ -39,7 +40,8 @@ class TrayIcon:
         win32gui.RegisterClass(wc)
 
         # Create Window
-        self.hwnd = win32gui.CreateWindow(wc.lpszClassName, '',
+        self.hwnd = win32gui.CreateWindow(
+                wc.lpszClassName, '',
                 win32con.WS_OVERLAPPED | win32con.WS_SYSMENU, 0, 0,
                 win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT, 0, 0,
                 wc.hInstance, None)
@@ -60,37 +62,27 @@ class TrayIcon:
         for text, item in menu:
             self.menu = TrayIcon.create_menu(self.menu, item, text)
 
-    #==========================================================================
     # メッセージループ開始
-    #==========================================================================
     def run(self):
         win32gui.PumpMessages()
         return
 
-    #==========================================================================
     # トレイアイコンデストラクタ
-    #==========================================================================
     def __destroy(self, hwnd, msg, wparam, lparam):
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
         win32gui.PostQuitMessage(0)
         return
 
-    #==========================================================================
     # デストラクタ起動
-    #==========================================================================
     def destroy(self, hwnd, msg, wparam, lparam):
         win32gui.DestroyWindow(hwnd)
         return
 
-    #==========================================================================
     # ポップアップメニューの動作定義
-    #==========================================================================
     def command(self, hwnd, msg, wparam, lparam):
         return
 
-    #==========================================================================
     # アイコンに対するクリック動作定義
-    #==========================================================================
     def notify(self, hwnd, msg, wparam, lparam):
         if lparam == win32con.WM_LBUTTONUP:
             self.show_menu()
@@ -106,29 +98,25 @@ class TrayIcon:
             pass
         return
 
-    #==========================================================================
     # ポップアップメッセージ（MSG_POPUP送信により起動）
-    #==========================================================================
     def popup(self, hwnd, msg, wparam, lparam):
-        nid = (self.hwnd, 0, win32gui.NIF_INFO, self.MSG_NOTIFY,
+        nid = (
+                self.hwnd, 0, win32gui.NIF_INFO, self.MSG_NOTIFY,
                 self.hicon, 'Message', 'MESSAGE', 200, "TITLE")
         win32gui.Shell_NotifyIcon(win32gui.NIM_MODIFY, nid)
         return
 
-    #==========================================================================
     # ポップアップメニュー表示
-    #==========================================================================
     def show_menu(self):
         pos = win32gui.GetCursorPos()
         win32gui.SetForegroundWindow(self.hwnd)
-        win32gui.TrackPopupMenu(self.menu, win32con.TPM_LEFTALIGN,
+        win32gui.TrackPopupMenu(
+                self.menu, win32con.TPM_LEFTALIGN,
                 pos[0], pos[1], 0, self.hwnd, None)
         win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
         return 1
 
-    #==========================================================================
     # ポップアップメニュー作成
-    #==========================================================================
     @staticmethod
     def create_menu(menu, item, text):
         # Normal menu
@@ -139,7 +127,8 @@ class TrayIcon:
         elif isinstance(item, list):
             flag = win32con.MF_POPUP
             sub_menu = win32gui.CreatePopupMenu()
-            for s,v in item: sub_menu = TrayIcon.create_menu(sub_menu, v, s)
+            for s, v in item:
+                sub_menu = TrayIcon.create_menu(sub_menu, v, s)
             item = sub_menu
 
         # Separotor
