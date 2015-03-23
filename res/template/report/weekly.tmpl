@@ -1,0 +1,12 @@
+{#
+from datetime import date, time, timedelta
+-#}
+
+{% set from_date = date.today() - timedelta(days=6) -%}
+{% set to_date = date.today() -%}
+
+{{ from_date.strftime("%m月%d日") }}から{{ to_date.strftime("%m月%d日") }}の作業内容一覧
+
+{% for task in root -%}
+{{ task.path }}
+{% endfor %}
