@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import win32con
 from lib.monitor.WinMonitor import WinMonitor
+
 
 class FileMonitor(WinMonitor):
 
@@ -19,4 +21,5 @@ class FileMonitor(WinMonitor):
     def inform(self, notice):
         # 変更内容を確認して通知する
         for act, path in notice:
-            if path == self.filename: super().inform(notice)
+            if path == self.filename:
+                super().inform(notice)

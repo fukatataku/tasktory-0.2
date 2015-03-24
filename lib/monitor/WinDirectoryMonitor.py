@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import win32con
 from lib.monitor.WinMonitor import WinMonitor
+
 
 class DirectoryMonitor(WinMonitor):
 

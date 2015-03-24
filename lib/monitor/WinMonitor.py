@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import win32file, win32con
+import win32file
+import win32con
+
 
 class WinMonitor:
 
@@ -29,7 +31,7 @@ class WinMonitor:
         while True:
             # ディレクトリに変更があるまでブロックする
             notice = win32file.ReadDirectoryChangesW(
-                    self.hDir, 2014, True, FLAG_NOTIFY, None, None)
+                    self.hDir, 2014, True, self.FLAG_NOTIFY, None, None)
 
             # 通知する
             self.inform(notice)
