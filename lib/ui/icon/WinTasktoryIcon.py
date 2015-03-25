@@ -1,29 +1,36 @@
 #!C:/python/python3.4/python
 # -*- coding: utf-8 -*-
 
-import os
 from lib.ui.icon.WinTrayIcon import TrayIcon
+from lib.common.common import ICON_IMG_FILE
 
 
 class TasktoryIcon(TrayIcon):
 
-    def __init__(self, conn, imgfile, menu, msg):
-        # 親プロセスとのコネクタ
-        self.conn = conn
+    def __init__(self):
+        menu = [
+                ('Sync', 0),
+                ('Report', [
+                    ('ALL', 1),
+                    ('チーム週報', 2),
+                    ('チーム月報', 3),
+                    ]),
+                (None, None),
+                ('Quit', 4),
+                ]
 
         # 親クラスのコンストラクタ
-        super().__init__(imgfile, menu, msg)
+        super().__init__(ICON_IMG_FILE, menu)
 
-        # 親プロセスにウィンドウハンドルを渡す
-        self.conn.send((os.getpid(), self.hwnd, None))
-
-        # メッセージループ
-        self.run()
         return
 
     def command(self, hwnd, msg, wparam, lparam):
-        self.conn.send((os.getpid(), wparam, lparam))
+        print(hwnd, msg, wparam, lparam)
+        if wparam == 0:
+            self.popup("タイトル", "メッセージ")
+        if wparam == 4:
+            self.destroy()
         return
 
-    def popup(self, hwnd, msg, wparam, lparam):
-        return super().popup(hwnd, msg, wparam, lparam)
+    def dummy(self):
+        return

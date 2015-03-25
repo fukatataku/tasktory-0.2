@@ -10,21 +10,14 @@ class TrayIcon:
     TITLE = 'TrayIcon'
 
     MSG_NOTIFY = win32con.WM_USER + 20
-    MSG_POPUP = win32con.WM_USER + 21
-    MSG_DESTROY = win32con.WM_USER + 22
 
     # コンストラクタ
-    def __init__(self, imgfile, msg, menu):
-        # Member
-        self.msg = msg
-
+    def __init__(self, imgfile, menu):
         # Create window procedure
         wp = {
                 win32con.WM_DESTROY: self.__destroy,
                 win32con.WM_COMMAND: self.command,
-                self.MSG_NOTIFY: self.notify,
-                self.MSG_POPUP: self.popup,
-                self.MSG_DESTROY: self.destroy,
+                self.MSG_NOTIFY: self.__notify,
                 }
 
         # Window class
@@ -67,23 +60,31 @@ class TrayIcon:
         win32gui.PumpMessages()
         return
 
-    # トレイアイコンデストラクタ
-    def __destroy(self, hwnd, msg, wparam, lparam):
-        win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
-        win32gui.PostQuitMessage(0)
+    # デストラクタ起動
+    def destroy(self):
+        win32gui.DestroyWindow(self.hwnd)
         return
 
-    # デストラクタ起動
-    def destroy(self, hwnd, msg, wparam, lparam):
-        win32gui.DestroyWindow(hwnd)
+    # ポップアップメッセージ（MSG_POPUP送信により起動）
+    def popup(self, title, message):
+        nid = (
+                self.hwnd, 0, win32gui.NIF_INFO, self.MSG_NOTIFY,
+                self.hicon, 'Message', message, 200, title)
+        win32gui.Shell_NotifyIcon(win32gui.NIM_MODIFY, nid)
         return
 
     # ポップアップメニューの動作定義
     def command(self, hwnd, msg, wparam, lparam):
         return
 
+    # トレイアイコンデストラクタ
+    def __destroy(self, hwnd, msg, wparam, lparam):
+        win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
+        win32gui.PostQuitMessage(0)
+        return
+
     # アイコンに対するクリック動作定義
-    def notify(self, hwnd, msg, wparam, lparam):
+    def __notify(self, hwnd, msg, wparam, lparam):
         if lparam == win32con.WM_LBUTTONUP:
             self.show_menu()
         elif lparam == win32con.WM_LBUTTONDOWN:
@@ -96,14 +97,6 @@ class TrayIcon:
             pass
         elif lparam == win32con.WM_RBUTTONDBLCLK:
             pass
-        return
-
-    # ポップアップメッセージ（MSG_POPUP送信により起動）
-    def popup(self, hwnd, msg, wparam, lparam):
-        nid = (
-                self.hwnd, 0, win32gui.NIF_INFO, self.MSG_NOTIFY,
-                self.hicon, 'Message', 'MESSAGE', 200, "TITLE")
-        win32gui.Shell_NotifyIcon(win32gui.NIM_MODIFY, nid)
         return
 
     # ポップアップメニュー表示
