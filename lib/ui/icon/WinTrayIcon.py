@@ -12,13 +12,13 @@ class TrayIcon:
     MSG_NOTIFY = win32con.WM_USER + 20
 
     # コンストラクタ
-    def __init__(self, imgfile, menu):
+    def __init__(self, wp, imgfile, menu):
         # Create window procedure
-        wp = {
-                win32con.WM_DESTROY: self.__destroy,
-                win32con.WM_COMMAND: self.command,
-                self.MSG_NOTIFY: self.__notify,
-                }
+        wp.update({
+            win32con.WM_DESTROY: self.__destroy,
+            win32con.WM_COMMAND: self.command,
+            self.MSG_NOTIFY: self.__notify,
+            })
 
         # Window class
         wc = win32gui.WNDCLASS()

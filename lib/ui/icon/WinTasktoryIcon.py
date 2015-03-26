@@ -1,15 +1,22 @@
 #!C:/python/python3.4/python
 # -*- coding: utf-8 -*-
 
+from datetime import date
 import configparser
+from multiprocessing import Process
 from lib.ui.icon.WinTrayIcon import TrayIcon
 from lib.ui.journal.Journal import Journal
+from lib.monitor.WinFileMonitor import FileMonitor
+from lib.monitor.WinDirectoryMonitor import DirectoryMonitor
 from lib.common.common import MAIN_CONF_FILE
 from lib.common.common import FILT_CONF_FILE
 from lib.common.common import ICON_IMG_FILE
 
 
 class TasktoryIcon(TrayIcon):
+
+    MSG_CHDIR = TrayIcon.MSG_NOTIFY + 1
+    MSG_CHFILE = TrayIcon.MSG_NOTIFY + 2
 
     def __init__(self):
         # コンフィグ
@@ -20,6 +27,13 @@ class TasktoryIcon(TrayIcon):
 
         # ジャーナル
         self.journal = Journal(config, filt_config)
+        self.journal.checkout(date.today())
+
+        # ウィンドウプロシージャ
+        wp = {
+                self.MSG_CHDIR: self.chdir,
+                self.MSG_CHFILE: self.chfile,
+                }
 
         # ポップアップメニュー
         menu = [
@@ -34,17 +48,47 @@ class TasktoryIcon(TrayIcon):
                 ]
 
         # 親クラスのコンストラクタ
-        super().__init__(ICON_IMG_FILE, menu)
+        super().__init__(wp, ICON_IMG_FILE, menu)
+
+        # モニタープロセス作成
+        self.file_monitor = Process(
+                target=FileMonitor,
+                args=(self.hwnd, self.MSG_CHFILE, config["Main"]["JOURNAL"]))
+        self.dir_monitor = Process(
+                target=DirectoryMonitor,
+                args=(self.hwnd, self.MSG_CHDIR, config["Main"]["ROOT"]))
+
+        # モニタープロセス開始
+        self.file_monitor.start()
+        self.dir_monitor.start()
 
         return
 
     def command(self, hwnd, msg, wparam, lparam):
         print(hwnd, msg, wparam, lparam)
         if wparam == 0:
-            self.popup("タイトル", "メッセージ")
-        if wparam == 4:
+            self.sync()
+        elif wparam == 4:
             self.destroy()
         return
 
-    def dummy(self):
+    def destroy(self):
+        self.file_monitor.terminate()
+        self.dir_monitor.terminate()
+        super().destroy()
+        return
+
+    def sync(self):
+        self.journal.commit()
+        self.journal.checkout(date.today())
+        self.popup("INFO", "System Synchronized")
+
+    def chdir(self, hwnd, msg, wparam, lparam):
+        self.journal.checkout(date.today())
+        self.popup("INFO", "FileSystem updated.")
+        return
+
+    def chfile(self, hwnd, msg, wparam, lparam):
+        self.journal.commit()
+        self.popup("INFO", "Journal updated.")
         return

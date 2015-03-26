@@ -72,7 +72,7 @@ class Tasktory(Task):
             return None
         with open(os.path.join(path, cls.PROFILE), 'rb') as f:
             task = pickle.load(f)
-            task.path = os.path.abspath(path)
+            task.path = os.path.abspath(path).replace("\\", "/")
             return task
 
     # 参照系クラスメソッド
