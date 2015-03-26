@@ -20,73 +20,85 @@ class TasktoryIcon(TrayIcon):
     MSG_CHDIR = TrayIcon.MSG_NOTIFY + 1
     MSG_CHFILE = TrayIcon.MSG_NOTIFY + 2
 
+    def exception(func):
+        def wrapper(*args, **kwargs):
+            self = args[0]
+            try:
+                return func(*args, **kwargs)
+            except TasktoryError as e:
+                self.popup("ERROR", str(e))
+            except TasktoryWarning as e:
+                self.popup("WARNING", str(e))
+            except:
+                self.popup("FATAL", str(e))
+        return wrapper
+
     def __init__(self):
-        try:
-            # コンフィグ
-            config = configparser.ConfigParser()
-            config.read(MAIN_CONF_FILE)
-            filt_config = configparser.ConfigParser()
-            filt_config.read(FILT_CONF_FILE)
+        # ウィンドウプロシージャ
+        wp = {
+                self.MSG_CHDIR: self.chdir,
+                self.MSG_CHFILE: self.chfile,
+                }
 
-            # ジャーナル
-            self.journal = Journal(config, filt_config)
-            self.journal.checkout(date.today())
+        # ポップアップメニュー
+        menu = [
+                ('Sync', 0),
+                ('Report', [
+                    ('ALL', 1),
+                    ('チーム週報', 2),
+                    ('チーム月報', 3),
+                    ]),
+                (None, None),
+                ('Quit', 4),
+                ]
 
-            # ウィンドウプロシージャ
-            wp = {
-                    self.MSG_CHDIR: self.chdir,
-                    self.MSG_CHFILE: self.chfile,
-                    }
+        self.proc = {
+                0: self.sync,
+                1: self.dummy,
+                2: self.dummy,
+                3: self.dummy,
+                4: self.destroy,
+                }
 
-            # ポップアップメニュー
-            menu = [
-                    ('Sync', 0),
-                    ('Report', [
-                        ('ALL', 1),
-                        ('チーム週報', 2),
-                        ('チーム月報', 3),
-                        ]),
-                    (None, None),
-                    ('Quit', 4),
-                    ]
+        # 親クラスのコンストラクタ
+        super().__init__(wp, ICON_IMG_FILE, menu)
 
-            # 親クラスのコンストラクタ
-            super().__init__(wp, ICON_IMG_FILE, menu)
+        # コンフィグ
+        config = configparser.ConfigParser()
+        config.read(MAIN_CONF_FILE)
+        filt_config = configparser.ConfigParser()
+        filt_config.read(FILT_CONF_FILE)
 
-            # モニタープロセス作成
-            self.file_monitor = Process(
-                    target=FileMonitor,
-                    args=(
-                        self.hwnd,
-                        self.MSG_CHFILE,
-                        config["Main"]["JOURNAL"]))
-            self.dir_monitor = Process(
-                    target=DirectoryMonitor,
-                    args=(
-                        self.hwnd,
-                        self.MSG_CHDIR,
-                        config["Main"]["ROOT"]))
+        # ジャーナル
+        self.journal = Journal(config, filt_config)
+        self.journal.checkout(date.today())
 
-            # モニタープロセス開始
-            self.file_monitor.start()
-            self.dir_monitor.start()
+        # モニタープロセス作成
+        self.file_monitor = Process(
+                target=FileMonitor,
+                args=(
+                    self.hwnd,
+                    self.MSG_CHFILE,
+                    config["Main"]["JOURNAL"]))
+        self.dir_monitor = Process(
+                target=DirectoryMonitor,
+                args=(
+                    self.hwnd,
+                    self.MSG_CHDIR,
+                    config["Main"]["ROOT"]))
 
-            # メッセージループ開始
-            self.run()
-        except TasktoryError as e:
-            self.popup("ERROR", str(e))
-        except TasktoryWarning as e:
-            self.popup("WARNING", str(e))
-        except:
-            self.popup("FATAL", str(e))
+        # モニタープロセス開始
+        self.file_monitor.start()
+        self.dir_monitor.start()
+
+        # メッセージループ開始
+        self.run()
         return
 
     def command(self, hwnd, msg, wparam, lparam):
-        print(hwnd, msg, wparam, lparam)
-        if wparam == 0:
-            self.sync()
-        elif wparam == 4:
-            self.destroy()
+        return self.proc[wparam]()
+
+    def dummy(self):
         return
 
     def destroy(self):
@@ -95,39 +107,21 @@ class TasktoryIcon(TrayIcon):
         super().destroy()
         return
 
+    @exception
     def sync(self):
-        try:
-            self.journal.commit()
-            self.journal.checkout(date.today())
-            self.popup("INFO", "System Synchronized")
-        except TasktoryError as e:
-            self.popup("ERROR", str(e))
-        except TasktoryWarning as e:
-            self.popup("WARNING", str(e))
-        except:
-            self.popup("FATAL", str(e))
+        self.journal.commit()
+        self.journal.checkout(date.today())
+        self.popup("INFO", "System Synchronized")
         return
 
+    @exception
     def chdir(self, hwnd, msg, wparam, lparam):
-        try:
-            self.journal.checkout(date.today())
-            self.popup("INFO", "FileSystem updated.")
-        except TasktoryError as e:
-            self.popup("ERROR", str(e))
-        except TasktoryWarning as e:
-            self.popup("WARNING", str(e))
-        except:
-            self.popup("FATAL", str(e))
+        self.journal.checkout(date.today())
+        self.popup("INFO", "FileSystem updated.")
         return
 
+    @exception
     def chfile(self, hwnd, msg, wparam, lparam):
-        try:
-            self.journal.commit()
-            self.popup("INFO", "Journal updated.")
-        except TasktoryError as e:
-            self.popup("ERROR", str(e))
-        except TasktoryWarning as e:
-            self.popup("WARNING", str(e))
-        except:
-            self.popup("FATAL", str(e))
+        self.journal.commit()
+        self.popup("INFO", "Journal updated.")
         return
