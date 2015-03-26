@@ -24,9 +24,47 @@ class ExceptionMeta(type):
 
 class TasktoryError(Exception, metaclass=ExceptionMeta):
     """タスクトリエラーの基底クラス"""
-    MSG = ""
+    def __str__(self):
+        return self.MSG
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class TasktoryWarning(Warning, metaclass=ExceptionMeta):
     """タスクトリ警告の基底クラス"""
-    MSG = ""
+    def __str__(self):
+        return self.MSG
+
+    def __repr__(self):
+        return self.__str__()
+
+
+# =============================================================================
+# Journal関係
+# =============================================================================
+class JournalBuilderDeadLineValueError(TasktoryError):
+    MSG = "期日の値が不正です"
+
+
+class JournalParserCommentFormatError(TasktoryError):
+    MSG = "コメントのフォーマットが不正です"
+
+
+class JournalParserDuplicateTaskError(TasktoryError):
+    MSG = "タスクトリに重複があります"
+
+
+class JournalParserOverlapTimeTableError(TasktoryError):
+    MSG = "作業時間に重複があります"
+
+
+# =============================================================================
+# TrayIcon関係
+# =============================================================================
+class TrayIconPopupMenuError(TasktoryError):
+    MSG = "ポップアップメニューに不明な項目が含まれています"
+
+
+class UnknownError(TasktoryError):
+    MSG = "何かに失敗しました"

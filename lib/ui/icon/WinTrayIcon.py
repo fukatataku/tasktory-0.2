@@ -3,6 +3,7 @@
 import win32api
 import win32gui
 import win32con
+from lib.common.exceptions import TrayIconPopupMenuError
 
 
 class TrayIcon:
@@ -131,7 +132,7 @@ class TrayIcon:
             text = ''
 
         else:
-            raise RuntimeError()
+            raise TrayIconPopupMenuError()
 
         win32gui.AppendMenu(menu, flag, item, text)
         return menu

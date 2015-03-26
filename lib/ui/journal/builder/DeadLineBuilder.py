@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from lib.common.exceptions import JournalBuilderDeadLineValueError
+
 
 class DeadLineBuilder:
 
@@ -16,4 +18,4 @@ class DeadLineBuilder:
         elif deadline is None:
             return ''
         else:
-            raise RuntimeError()
+            raise JournalBuilderDeadLineValueError()

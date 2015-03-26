@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# For test
-import sys, os
-path = lambda p:os.path.abspath(os.path.join(os.path.dirname(__file__), p))
-sys.path.append(path('../../../../'))
-
 import datetime
 from lib.common.Regexplate import Regexplate
+
 
 class TimeTableParser:
     """タイムテーブル解析器"""
@@ -33,18 +29,3 @@ class TimeTableParser:
         return int(datetime.datetime(
             self.year, self.month, self.day, int(hour), int(minute), 0
             ).timestamp())
-
-if __name__ == '__main__':
-    # コンフィグ
-    import configparser
-    today = datetime.date.today()
-    config_path = path('../../../../res/conf/main.conf')
-    config = configparser.ConfigParser()
-    config.read(config_path)
-
-    ttp = TimeTableParser(today, config)
-    print(ttp.parse(''))
-    print(ttp.parse('9:00-10:00'))
-    print(ttp.parse('9:00-12:00'))
-    print(ttp.parse('9:00-10:00,10:00-11:00'))
-    print(ttp.parse('9:00-11:00,10:00-12:00'))
