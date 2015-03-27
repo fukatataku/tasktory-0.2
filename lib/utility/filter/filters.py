@@ -121,7 +121,7 @@ class WorkAtDateFilter(TasktoryFilter):
         self.test = lambda t: date in self.dates(t)
         return
 
-    def dates(t):
+    def dates(self, t):
         datetimes = [datetime.fromtimestamp(s) for s, _ in t.timetable]
         return list(set([dt.date() for dt in datetimes]))
 

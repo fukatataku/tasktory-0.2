@@ -117,11 +117,11 @@ class TasktoryIcon(TrayIcon):
     @exception
     def chdir(self, hwnd, msg, wparam, lparam):
         self.journal.checkout(date.today())
-        self.popup("INFO", "FileSystem updated.")
+        self.popup("INFO", "Journal updated.")
         return
 
     @exception
     def chfile(self, hwnd, msg, wparam, lparam):
         self.journal.commit()
-        self.popup("INFO", "Journal updated.")
+        self.popup("INFO", "FileSystem updated.")
         return

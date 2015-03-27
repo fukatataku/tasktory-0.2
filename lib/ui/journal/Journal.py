@@ -37,6 +37,8 @@ class Journal:
         else:
             tasks = self.jf.select(root_task)
 
+        # TODO: tasksのuniwを取る
+
         # ジャーナルディレクトリを作成する
         os.makedirs(os.path.dirname(self.journal), exist_ok=True)
 
