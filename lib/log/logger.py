@@ -11,9 +11,8 @@ class Logger:
     def __init__(self):
         import os
         from lib.common.common import LOG_DIR
-        if not os.path.exist(LOG_DIR):
-            # TODO
-            pass
+        if not os.path.isdir(LOG_DIR):
+            os.makedirs(LOG_DIR)
         return
 
     # ログ作成
