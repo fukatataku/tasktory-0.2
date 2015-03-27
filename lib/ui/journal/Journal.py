@@ -8,7 +8,7 @@ from lib.ui.journal.builder.JournalBuilder import JournalBuilder
 from lib.ui.journal.builder.TasktoryBuilder import TasktoryBuilder
 from lib.ui.journal.parser.JournalParser import JournalParser
 from lib.utility.filter.TasktoryFilter import TasktoryFilter
-
+from lib.common.common import unique
 from lib.common.common import JRNL_TMPL_FILE
 
 
@@ -37,7 +37,8 @@ class Journal:
         else:
             tasks = self.jf.select(root_task)
 
-        # TODO: tasksのuniwを取る
+        # tasksのuniqを取る
+        tasks = unique(tasks, lambda t: t.path)
 
         # ジャーナルディレクトリを作成する
         os.makedirs(os.path.dirname(self.journal), exist_ok=True)

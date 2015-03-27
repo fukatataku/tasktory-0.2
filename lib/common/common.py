@@ -24,3 +24,14 @@ def convolute(proc, iterable, start=0):
         result, acc = proc(value, acc)
         rtn.append(result)
     return rtn
+
+
+def unique(iterable, func):
+    rtn = []
+    frtn = []
+    for v in iterable:
+        fv = func(v)
+        if fv not in frtn:
+            rtn.append(v)
+            frtn.append(fv)
+    return rtn
