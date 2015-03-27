@@ -2,12 +2,18 @@
 
 import datetime
 import inspect
+from lib.common.common import LOG_FILE
 
 
 class Logger:
 
     # コンストラクタ
     def __init__(self):
+        import os
+        from lib.common.common import LOG_DIR
+        if not os.path.exist(LOG_DIR):
+            # TODO
+            pass
         return
 
     # ログ作成
@@ -23,7 +29,8 @@ class Logger:
 
     # 書き込み
     def put(self, logline):
-        print(logline)
+        with open(LOG_FILE, "r", encoding="utf-8") as logfile:
+            logfile.write(logline + "\n")
         return
 
     # 基本ロギングメソッド

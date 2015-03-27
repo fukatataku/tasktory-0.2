@@ -10,11 +10,13 @@ RES_DIR = join(__HOME__, 'res')
 CONF_DIR = join(RES_DIR, 'conf')
 TMPL_DIR = join(RES_DIR, 'template')
 RPRT_DIR = join(TMPL_DIR, "report")
+LOG_DIR = join(__HOME__, "log")
 
 MAIN_CONF_FILE = join(CONF_DIR, 'main.conf')
 FILT_CONF_FILE = join(CONF_DIR, 'filter.conf')
 JRNL_TMPL_FILE = join(TMPL_DIR, 'journal.tmpl')
 ICON_IMG_FILE = join(RES_DIR, "image", "tasktory.ico")
+LOG_FILE = join(LOG_DIR, "tasktory.log")
 
 
 def convolute(proc, iterable, start=0):
