@@ -3,9 +3,10 @@
 
 import datetime
 from lib.common.Regexplate import Regexplate
+from lib.log.Logger import Logger
 
 
-class TimeTableBuilder:
+class TimeTableBuilder(Logger):
 
     def __init__(self, date, config):
         self.year = date.year
@@ -13,16 +14,20 @@ class TimeTableBuilder:
         self.day = date.day
         self.template = Regexplate(config['Journal']['TIME'])
         self.delim = config['Journal']['DELIM']
+        super().__init__()
 
+    @Logger.logging
     def build(self, timetable):
         maps = [self.time_map(s, s+t) for s, t in timetable if self.at_date(s)]
         return self.delim.join([self.template.substitute(m) for m in maps])
 
+    @Logger.logging
     def at_date(self, ts):
         a = datetime.datetime(self.year, self.month, self.day, 0, 0, 0)
         b = a + datetime.timedelta(1)
         return int(a.timestamp()) <= ts and ts < int(b.timestamp())
 
+    @Logger.logging
     def time_map(self, s, e):
         start = datetime.datetime.fromtimestamp(s)
         end = datetime.datetime.fromtimestamp(e)

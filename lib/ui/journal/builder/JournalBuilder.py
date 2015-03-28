@@ -4,14 +4,17 @@
 from lib.common.Regexplate import Regexplate
 from lib.core.Tasktory import Tasktory
 from lib.ui.journal.builder.TaskChunkBuilder import TaskChunkBuilder
+from lib.log.Logger import Logger
 
 
-class JournalBuilder:
+class JournalBuilder(Logger):
 
     def __init__(self, tmpl, config):
         self.template = Regexplate(tmpl)
         self.config = config
+        super().__init__()
 
+    @Logger.logging
     def build(self, date, tasks):
         self.tcb = TaskChunkBuilder(date, self.config)
         return self.template.substitute({

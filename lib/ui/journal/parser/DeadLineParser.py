@@ -4,9 +4,10 @@
 import datetime
 import re
 from lib.common.Regexplate import Regexplate
+from lib.log.Logger import Logger
 
 
-class DeadLineParser:
+class DeadLineParser(Logger):
     """期日解析器"""
 
     def __init__(self, date, config):
@@ -14,7 +15,10 @@ class DeadLineParser:
         self.num_reg = re.compile('^-?\d+$')
         self.infstr = config['Journal']['INFSTR']
         self.template = Regexplate(config['Journal']['DATE'])
+        super().__init__()
+        return
 
+    @Logger.logging
     def parse(self, string):
         # @
         if string == '':

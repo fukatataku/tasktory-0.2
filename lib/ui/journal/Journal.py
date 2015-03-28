@@ -10,9 +10,10 @@ from lib.ui.journal.parser.JournalParser import JournalParser
 from lib.utility.filter.TasktoryFilter import TasktoryFilter
 from lib.common.common import unique
 from lib.common.common import JRNL_TMPL_FILE
+from lib.log.Logger import Logger
 
 
-class Journal:
+class Journal(Logger):
     """"""
 
     def __init__(self, config, filt_config):
@@ -24,7 +25,10 @@ class Journal:
         self.tb = TasktoryBuilder(config)
         self.root = config['Main']['ROOT']
         self.journal = config['Main']['JOURNAL']
+        super().__init__()
+        return
 
+    @Logger.logging
     def checkout(self, date):
         # TODO チェックアウト時にメモを残す？
         # 既存のジャーナルからメモを読み出す
@@ -47,6 +51,7 @@ class Journal:
         with open(self.journal, 'w', encoding='utf-8') as f:
             f.write(self.jb.build(date, tasks))
 
+    @Logger.logging
     def read_journal(self):
         # ジャーナルが存在しなければNoneを返す?
         if not os.path.isfile(self.journal):
@@ -59,6 +64,7 @@ class Journal:
         # ジャーナルを解析する
         return self.jp.parse(text)
 
+    @Logger.logging
     def commit(self):
         # ジャーナルを解析する
         date, attrs_list, memo_list = self.read_journal()
@@ -72,6 +78,7 @@ class Journal:
             Tasktory.restore(memo['PATH']).memo.put(
                     datetime.datetime.now(), memo['TEXT'])
 
+    @Logger.logging
     def commit_one(self, date, attrs):
         leaf, inners = self.tb.build(attrs)
 

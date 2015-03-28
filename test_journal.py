@@ -25,4 +25,4 @@ if __name__ == '__main__':
     journal.checkout(today)
 
     # commit
-    # journal.commit()
+    journal.commit()

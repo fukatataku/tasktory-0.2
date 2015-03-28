@@ -9,16 +9,20 @@ from lib.ui.journal.parser.MemoParser import MemoParser
 from lib.common.common import convolute
 from lib.common.exceptions import JournalParserDuplicateTaskError
 from lib.common.exceptions import JournalParserOverlapTimeTableError
+from lib.log.Logger import Logger
 
 
-class JournalParser:
+class JournalParser(Logger):
     """ジャーナル解析器"""
 
     def __init__(self, tmpl, config):
         self.template = Regexplate(tmpl)
         self.config = config
         self.mp = MemoParser(config)
+        super().__init__()
+        return
 
+    @Logger.logging
     def parse(self, text):
         # ジャーナルをパース
         attrs = self.template.parse(text)

@@ -16,7 +16,7 @@ MAIN_CONF_FILE = join(CONF_DIR, 'main.conf')
 FILT_CONF_FILE = join(CONF_DIR, 'filter.conf')
 JRNL_TMPL_FILE = join(TMPL_DIR, 'journal.tmpl')
 ICON_IMG_FILE = join(RES_DIR, "image", "tasktory.ico")
-LOG_FILE = join(LOG_DIR, "tasktory.log")
+LOG_FILE = join(LOG_DIR, "tasktory.%Y-%m-%d.log")
 
 
 def convolute(proc, iterable, start=0):

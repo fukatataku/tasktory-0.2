@@ -4,9 +4,10 @@
 from lib.common.Regexplate import Regexplate
 from lib.ui.journal.builder.DeadLineBuilder import DeadLineBuilder
 from lib.ui.journal.builder.TimeTableBuilder import TimeTableBuilder
+from lib.log.Logger import Logger
 
 
-class TaskLineBuilder:
+class TaskLineBuilder(Logger):
     """"""
 
     def __init__(self, date, config):
@@ -14,10 +15,13 @@ class TaskLineBuilder:
         self.dlb = DeadLineBuilder(date, config)
         self.ttb = TimeTableBuilder(date, config)
         self.template = Regexplate(config['Journal']['TASKLINE'])
+        super().__init__()
 
+    @Logger.logging
     def build(self, task):
         return self.template.substitute(self.task_map(task))
 
+    @Logger.logging
     def task_map(self, task):
         return {
                 'PATH': self.short_path(task.path),
@@ -25,6 +29,7 @@ class TaskLineBuilder:
                 'TIMETABLE': self.ttb.build(task.timetable),
                 }
 
+    @Logger.logging
     def short_path(self, path):
         if self.root not in path or path.index(self.root) != 0:
             return path

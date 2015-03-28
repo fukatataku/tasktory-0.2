@@ -3,6 +3,11 @@
 
 04. フィルターコンフィグの書き方
 
+05. ロガーの仕様
+    - ファイルに書き込む部分はsingletonにする
+    - クラス名とメソッド名を自動で取るようにする
+    - YYYY-mm-ddTHH:MM:SS INFO Tasktory.restore START args=(...)&kwargs={...}
+
 [Closed]
 01. ROOTがタスクトリになっていないので、チェックアウトしても何も出ない
     [解決案]
