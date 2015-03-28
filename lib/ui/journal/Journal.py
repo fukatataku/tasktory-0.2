@@ -100,6 +100,7 @@ class Journal(Logger):
 
     @staticmethod
     def at(date, ts):
+        """指定したタイムスタンプtsが日付dateに含まれているかどうかを返す"""
         a = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
         b = a + datetime.timedelta(1)
         return int(a.timestamp()) <= ts and ts < int(b.timestamp())
