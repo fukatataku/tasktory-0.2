@@ -3,10 +3,9 @@
 
 04. フィルターコンフィグの書き方
 
-05. ロガーの仕様
-    - ファイルに書き込む部分はsingletonにする
-    - クラス名とメソッド名を自動で取るようにする
-    - YYYY-mm-ddTHH:MM:SS INFO Tasktory.restore START args=(...)&kwargs={...}
+05. TimeTableBuilderとJournalに同じようなメソッドが定義されている
+    - TimeTableBuilder.ad_date と Journal.at
+    - 両方とも、指定したタイムスタンプが日付に含まれているかどうかを返している
 
 [Closed]
 01. ROOTがタスクトリになっていないので、チェックアウトしても何も出ない

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 from lib.core.Tasktory import Tasktory
 
 
@@ -118,12 +118,8 @@ class StatusIsNotCloseFilter(StatusIsNotFilter):
 # 特定の日に作業時間が計上されている
 class WorkAtDateFilter(TasktoryFilter):
     def __init__(self, date):
-        self.test = lambda t: date in self.dates(t)
+        self.test = lambda t: t.at(date)
         return
-
-    def dates(self, t):
-        datetimes = [datetime.fromtimestamp(s) for s, _ in t.timetable]
-        return list(set([dt.date() for dt in datetimes]))
 
 
 # 当日のN日前に作業時間が計上されている
@@ -141,11 +137,8 @@ class WorkAtTodayFilter(WorkAtDaysFromTodayFilter):
 # 特定の期間に作業が計上されている
 class WorkInPeriodFilter(WorkAtDateFilter):
     def __init__(self, from_date, to_date):
-        self.test = lambda t: any([self.in_date(d) for d in self.dates(t)])
+        self.test = lambda t: t.at(from_date, to_date)
         return
-
-    def in_date(self, d):
-        return self.from_date <= d and d <= self.to_date
 
 
 # N日前から当日までに作業が計上されている
