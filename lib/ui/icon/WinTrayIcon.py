@@ -4,9 +4,10 @@ import win32api
 import win32gui
 import win32con
 from lib.common.exceptions import TrayIconPopupMenuError
+from lib.log.Logger import Logger
 
 
-class TrayIcon:
+class TrayIcon(Logger):
 
     TITLE = 'TrayIcon'
 
@@ -56,17 +57,22 @@ class TrayIcon:
         for text, item in menu:
             self.menu = TrayIcon.create_menu(self.menu, item, text)
 
+        super().__init__()
+
     # メッセージループ開始
+    @Logger.logging
     def run(self):
         win32gui.PumpMessages()
         return
 
     # デストラクタ起動
+    @Logger.logging
     def destroy(self):
         win32gui.DestroyWindow(self.hwnd)
         return
 
     # ポップアップメッセージ（MSG_POPUP送信により起動）
+    @Logger.logging
     def popup(self, title, message):
         nid = (
                 self.hwnd, 0, win32gui.NIF_INFO, self.MSG_NOTIFY,
@@ -75,16 +81,19 @@ class TrayIcon:
         return
 
     # ポップアップメニューの動作定義
+    @Logger.logging
     def command(self, hwnd, msg, wparam, lparam):
         return
 
     # トレイアイコンデストラクタ
+    @Logger.logging
     def __destroy(self, hwnd, msg, wparam, lparam):
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
         win32gui.PostQuitMessage(0)
         return
 
     # アイコンに対するクリック動作定義
+    @Logger.logging
     def __notify(self, hwnd, msg, wparam, lparam):
         if lparam == win32con.WM_LBUTTONUP:
             self.show_menu()
@@ -101,6 +110,7 @@ class TrayIcon:
         return
 
     # ポップアップメニュー表示
+    @Logger.logging
     def show_menu(self):
         pos = win32gui.GetCursorPos()
         win32gui.SetForegroundWindow(self.hwnd)
@@ -108,7 +118,7 @@ class TrayIcon:
                 self.menu, win32con.TPM_LEFTALIGN,
                 pos[0], pos[1], 0, self.hwnd, None)
         win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
-        return 1
+        return
 
     # ポップアップメニュー作成
     @staticmethod

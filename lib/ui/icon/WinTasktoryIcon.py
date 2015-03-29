@@ -13,6 +13,7 @@ from lib.common.common import FILT_CONF_FILE
 from lib.common.common import ICON_IMG_FILE
 from lib.common.exceptions import TasktoryError
 from lib.common.exceptions import TasktoryWarning
+from lib.log.Logger import Logger
 
 
 class TasktoryIcon(TrayIcon):
@@ -95,12 +96,15 @@ class TasktoryIcon(TrayIcon):
         self.run()
         return
 
+    @Logger.logging
     def command(self, hwnd, msg, wparam, lparam):
         return self.proc[wparam]()
 
+    @Logger.logging
     def dummy(self):
         return
 
+    @Logger.logging
     def destroy(self):
         self.file_monitor.terminate()
         self.dir_monitor.terminate()
@@ -108,6 +112,7 @@ class TasktoryIcon(TrayIcon):
         return
 
     @exception
+    @Logger.logging
     def sync(self):
         self.journal.commit()
         self.journal.checkout(date.today())
@@ -115,12 +120,14 @@ class TasktoryIcon(TrayIcon):
         return
 
     @exception
+    @Logger.logging
     def chdir(self, hwnd, msg, wparam, lparam):
         self.journal.checkout(date.today())
         self.popup("INFO", "Journal updated.")
         return
 
     @exception
+    @Logger.logging
     def chfile(self, hwnd, msg, wparam, lparam):
         self.journal.commit()
         self.popup("INFO", "FileSystem updated.")
