@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from lib.utility.filter.filters import FilterFactory
+from lib.log.Logger import Logger
 
 
-class TasktoryFilter:
+class TasktoryFilter(Logger):
 
     def __init__(self, cls_map):
         self.flt_map = [[cls() for cls in cls_list] for cls_list in cls_map]
+        super().__init__()
         return
 
+    @Logger.logging
     def select(self, task_list):
         task_map =\
             [self.__select(task_list, flt_list) for flt_list in self.flt_map]
