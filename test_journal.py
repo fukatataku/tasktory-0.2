@@ -21,8 +21,5 @@ if __name__ == '__main__':
     # create journal object
     journal = Journal(config, filt_config)
 
-    # checkout
-    journal.checkout(today)
-
-    # commit
     # journal.commit()
+    journal.checkout(today)

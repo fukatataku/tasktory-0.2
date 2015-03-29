@@ -34,6 +34,7 @@ class TasktoryFilter(Logger):
         return unique_task_list
 
     @classmethod
+    @Logger.logging
     def get_filter(cls, flt_config_section):
         flt_map = []
         for name in cls.__parse(flt_config_section['filters']):
@@ -41,6 +42,7 @@ class TasktoryFilter(Logger):
         return cls.__get_filter(flt_map)
 
     @classmethod
+    @Logger.logging
     def __get_filter(cls, name_map):
         cls_map = [cls.__filter_list(name_list) for name_list in name_map]
         return cls(cls_map)

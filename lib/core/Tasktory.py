@@ -4,6 +4,7 @@ import os
 import pickle
 from lib.core.Task import Task
 from lib.core.Memo import Memo
+from lib.log.Logger import Logger
 
 
 class Tasktory(Task):
@@ -27,6 +28,7 @@ class Tasktory(Task):
                 yield c
 
     # 変更系
+    @Logger.logging
     def sync(self):
         """ファイルシステムに自身を保存する"""
         if not os.path.exists(self.path):
@@ -35,6 +37,7 @@ class Tasktory(Task):
             pickle.dump(self, f)
         return self
 
+    @Logger.logging
     def merge(self, other):
         """タスクの差分をマージする"""
         super().merge(other)
@@ -42,16 +45,19 @@ class Tasktory(Task):
         return self
 
     # ツリー参照系
+    @Logger.logging
     def parent(self):
         """親タスクを返す。無ければNoneを返す"""
         return type(self).restore(os.path.dirname(self.path))
 
+    @Logger.logging
     def children(self):
         """子タスクのリストを返す。無ければ空リストを返す"""
         children = [
             self.restore(self.path + '/' + p) for p in os.listdir(self.path)]
         return [c for c in children if c]
 
+    @Logger.logging
     def level(self):
         """タスクの階層を返す"""
         parent = self.parent()
@@ -59,6 +65,7 @@ class Tasktory(Task):
 
     # タスク作成系クラスメソッド
     @classmethod
+    @Logger.logging
     def new(cls, path, deadline, status, comment):
         """"""
         task = cls(path, deadline, status)
@@ -66,6 +73,7 @@ class Tasktory(Task):
         return task
 
     @classmethod
+    @Logger.logging
     def restore(cls, path):
         """ディレクトリパスを指定してタスクを復元する"""
         if not cls.istask(path):
@@ -77,6 +85,7 @@ class Tasktory(Task):
 
     # 参照系クラスメソッド
     @classmethod
+    @Logger.logging
     def istask(cls, path):
         """指定したディレクトリがタスクトリかどうか判定する"""
         if not os.path.isdir(path):

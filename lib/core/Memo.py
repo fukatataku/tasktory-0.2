@@ -4,9 +4,10 @@
 import os
 import re
 from lib.common.Regexplate import Regexplate
+from lib.log.Logger import Logger
 
 
-class Memo:
+class Memo(Logger):
 
     stamp = Regexplate('## Written at %Y/%m/%d %H:%M')
 
@@ -18,8 +19,10 @@ class Memo:
     def __init__(self, dirpath, filename):
         self.dirpath = dirpath
         self.filepath = os.path.join(dirpath, filename)
+        super().__init__()
 
     # メモ取得
+    @Logger.logging
     def get(self):
         # ファイルが無ければ空リストを返す
         if not os.path.isdir(self.dirpath):
@@ -33,6 +36,7 @@ class Memo:
         return [s for _, s in type(self).parse(text, type(self).stamp)]
 
     # メモ追記
+    @Logger.logging
     def put(self, timestamp, text):
         # ディレクトリが無ければ作成する
         if not os.path.isdir(self.dirpath):
@@ -50,12 +54,14 @@ class Memo:
 
     # 補助メソッド
     @classmethod
+    @Logger.logging
     def parse(cls, text, template):
         titles = template.findall(text)
         texts = [cls.trim(s) for s in template.split(text)[1:]]
         return list(zip(titles, texts))
 
     @classmethod
+    @Logger.logging
     def trim(cls, string):
         string = Memo.head_blank_reg.sub('', string)
         string = Memo.tail_blank_reg.sub('', string)
