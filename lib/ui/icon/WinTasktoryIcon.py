@@ -1,6 +1,7 @@
 #!C:/python/python3.4/python
 # -*- coding: utf-8 -*-
 
+import os
 from datetime import date
 import configparser
 from multiprocessing import Process
@@ -69,6 +70,11 @@ class TasktoryIcon(TrayIcon):
         config.read(MAIN_CONF_FILE)
         filt_config = configparser.ConfigParser()
         filt_config.read(FILT_CONF_FILE)
+
+        # ディレクトリを作成する
+        root_dir = config["Main"]["ROOT"]
+        if not os.path.isdir(root_dir):
+            os.makedirs(root_dir)
 
         # ジャーナル
         self.journal = Journal(config, filt_config)
