@@ -22,16 +22,16 @@ class TasktoryIcon(TrayIcon):
     MSG_CHFILE = TrayIcon.MSG_NOTIFY + 2
 
     def exception(func):
-        def wrapper(*args, **kwargs):
-            self = args[0]
+        def wrapper(self, *args, **kwargs):
             try:
-                return func(*args, **kwargs)
+                return func(self, *args, **kwargs)
             except TasktoryError as e:
                 self.popup("ERROR", str(e))
             except TasktoryWarning as e:
                 self.popup("WARNING", str(e))
-            except:
+            except Exception as e:
                 self.popup("FATAL", str(e))
+                self.fatal(str(e))
         return wrapper
 
     def __init__(self):
