@@ -28,11 +28,13 @@ class TasktoryIcon(TrayIcon):
                 return func(self, *args, **kwargs)
             except TasktoryError as e:
                 self.popup("ERROR", str(e))
+                self.error("ERROR", str(e))
             except TasktoryWarning as e:
                 self.popup("WARNING", str(e))
+                self.warn("WARNING", str(e))
             except Exception as e:
                 self.popup("FATAL", str(e))
-                self.fatal(str(e))
+                self.fatal("FATAL", str(e))
         return wrapper
 
     def __init__(self):
