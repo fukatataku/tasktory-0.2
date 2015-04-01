@@ -1,4 +1,4 @@
-#!C:/python/python3.4/python
+#!C:/python/python3.4/pythonw.exe
 # -*- coding: utf-8 -*-
 
 from lib.ui.icon.WinTasktoryIcon import TasktoryIcon

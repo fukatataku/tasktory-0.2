@@ -84,6 +84,16 @@ class Logger:
         return
 
     @classmethod
+    def dstart(cls, msg="-", r=1, caller=None):
+        cls.debug("START", msg, r+1, caller)
+        return
+
+    @classmethod
+    def dend(cls, msg="-", r=1, caller=None):
+        cls.debug("END", msg, r+1, caller)
+        return
+
+    @classmethod
     def success(cls, msg="-", r=1, caller=None):
         cls.info("SUCCESS", msg, r+1, caller)
         return
@@ -96,8 +106,8 @@ class Logger:
     @staticmethod
     def logging(func):
         def wrapper(obj, *args, **kwargs):
-            obj.start("args={}&kwargs={}".format(args, kwargs), 0, func)
+            obj.dstart("args={}&kwargs={}".format(args, kwargs), 0, func)
             rtn = func(obj, *args, **kwargs)
-            obj.end("return {}".format(rtn), 0, func)
+            obj.dend("return {}".format(rtn), 0, func)
             return rtn
         return wrapper
