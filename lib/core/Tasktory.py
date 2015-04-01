@@ -27,6 +27,13 @@ class Tasktory(Task):
             for c in child:
                 yield c
 
+    # 文字列表現
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "{}(path=\"{}\")".format(self.__class__.__name__, self.path)
+
     # 変更系
     @Logger.logging
     def sync(self):
