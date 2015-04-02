@@ -48,7 +48,7 @@ class Regexplate(Template):
     def parse(self, string):
         m = self.creg.match(string)
         if not m:
-            raise ValueError()
+            raise ValueError("regexplate not match string")
         return m.groupdict()
 
     def match(self, string):

@@ -7,6 +7,7 @@ from lib.common.Regexplate import Regexplate
 from lib.ui.journal.parser.TaskChunkParser import TaskChunkParser
 from lib.ui.journal.parser.MemoParser import MemoParser
 from lib.common.common import convolute
+from lib.common.exceptions import JournalParserNoMatchTemplateError
 from lib.common.exceptions import JournalParserDuplicateTaskError
 from lib.common.exceptions import JournalParserOverlapTimeTableError
 from lib.log.Logger import Logger
@@ -25,6 +26,8 @@ class JournalParser(Logger):
     @Logger.logging
     def parse(self, text):
         # ジャーナルをパース
+        if not self.template.match(text):
+            raise JournalParserNoMatchTemplateError()
         attrs = self.template.parse(text)
 
         # 日付を取得

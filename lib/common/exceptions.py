@@ -47,6 +47,10 @@ class JournalBuilderDeadLineValueError(TasktoryError):
     MSG = "期日の値が不正です"
 
 
+class JournalParserNoMatchTemplateError(TasktoryError):
+    MSG = "ジャーナルがテンプレートに一致しません"
+
+
 class JournalParserCommentFormatError(TasktoryError):
     MSG = "コメントのフォーマットが不正です"
 

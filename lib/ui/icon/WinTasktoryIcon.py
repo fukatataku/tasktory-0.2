@@ -124,19 +124,19 @@ class TasktoryIcon(TrayIcon):
     def sync(self):
         self.journal.commit()
         self.journal.checkout(date.today())
-        self.popup("INFO", "System Synchronized")
+        self.popup("INFO", "ジャーナルとファイルシステムを同期しました")
         return
 
     @exception
     @Logger.logging
     def chdir(self, hwnd, msg, wparam, lparam):
         self.journal.checkout(date.today())
-        self.popup("INFO", "Journal updated.")
+        self.popup("INFO", "ジャーナルを更新しました")
         return
 
     @exception
     @Logger.logging
     def chfile(self, hwnd, msg, wparam, lparam):
         self.journal.commit()
-        self.popup("INFO", "FileSystem updated.")
+        self.popup("INFO", "ファイルシステムを更新しました")
         return
