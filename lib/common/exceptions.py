@@ -63,6 +63,10 @@ class JournalParserOverlapTimeTableError(TasktoryError):
     MSG = "作業時間に重複があります"
 
 
+class JournalManagerNoExistTaskOfMemoError(TasktoryError):
+    MSG = "存在しないタスクのメモが記載されています"
+
+
 # =============================================================================
 # TrayIcon関係
 # =============================================================================
