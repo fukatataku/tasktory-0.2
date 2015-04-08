@@ -32,7 +32,7 @@ class Journal(Logger):
     def checkout(self, date):
         # TODO チェックアウト時にメモを残す？
         # 既存のジャーナルからメモを読み出す
-        # _, _, memo_list = self.read_journal()
+        # _, _, memo_list = self.read()
 
         # ファイルシステムからタスクを復元する
         root_task = Tasktory.restore(self.root)
@@ -52,7 +52,7 @@ class Journal(Logger):
             f.write(self.jb.build(date, tasks))
 
     @Logger.logging
-    def read_journal(self):
+    def read(self):
         # ジャーナルが存在しなければNoneを返す?
         if not os.path.isfile(self.journal):
             return datetime.datetime.now(), [], []
@@ -67,11 +67,11 @@ class Journal(Logger):
     @Logger.logging
     def commit(self):
         # ジャーナルを解析する
-        date, attrs_list, memo_list = self.read_journal()
+        date, attrs_list, memo_list = self.read()
 
         # ファイルシステムにコミットする
         for attrs in attrs_list:
-            self.commit_one(date, attrs)
+            self.__commit(date, attrs)
 
         # メモをコミットする
         for memo in memo_list:
@@ -79,7 +79,7 @@ class Journal(Logger):
                     datetime.datetime.now(), memo['TEXT'])
 
     @Logger.logging
-    def commit_one(self, date, attrs):
+    def __commit(self, date, attrs):
         leaf, inners = self.tb.build(attrs)
 
         # 葉ノードタスクトリをコミットする
@@ -88,8 +88,7 @@ class Journal(Logger):
             leaf.sync()
         else:
             # マージする前に当日の作業時間を削除する
-            org.timetable =\
-                [t for t in org.timetable if not self.at(date, t[0])]
+            org.timetable = [t for t in org.timetable if not t.at(date)]
             org.merge(leaf).sync()
 
         # 内部ノードタスクトリをコミットする
@@ -97,10 +96,3 @@ class Journal(Logger):
             org = Tasktory.restore(t.path)
             if org is None:
                 t.sync()
-
-    @staticmethod
-    def at(date, ts):
-        """指定したタイムスタンプtsが日付dateに含まれているかどうかを返す"""
-        a = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
-        b = a + datetime.timedelta(1)
-        return int(a.timestamp()) <= ts and ts < int(b.timestamp())
