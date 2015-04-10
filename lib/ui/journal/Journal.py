@@ -10,6 +10,7 @@ from lib.ui.journal.parser.JournalParser import JournalParser
 from lib.utility.filter.TasktoryFilter import TasktoryFilter
 from lib.common.common import unique
 from lib.common.common import JRNL_TMPL_FILE
+from lib.common.exceptions import JournalManagerNoExistTaskOfMemoError
 from lib.log.Logger import Logger
 
 
@@ -67,32 +68,72 @@ class Journal(Logger):
     @Logger.logging
     def commit(self):
         # ジャーナルを解析する
-        date, attrs_list, memo_list = self.read()
+        date, attrs, memos = self.read()
 
         # ファイルシステムにコミットする
-        for attrs in attrs_list:
-            self.__commit(date, attrs)
+        commit_task_num = self.commit_task(date, attrs)
+
+        # メモのタスクが存在するか確認する
+        for memo in memos:
+            if Tasktory.istask(memo["PATH"]):
+                raise JournalManagerNoExistTaskOfMemoError(memo["PATH"])
 
         # メモをコミットする
-        for memo in memo_list:
-            Tasktory.restore(memo['PATH']).memo.put(
-                    datetime.datetime.now(), memo['TEXT'])
+        now = datetime.datetime.now()
+        results = [
+                Tasktory.restore(memo["PATH"]).memo.put(now, memo["TEXT"])
+                for memo in memos]
+        commit_memo_num = len([b for b in results if b])
 
+        return commit_task_num, commit_memo_num
+
+    # タスクをコミットする
+    # コミットしたタスクの数を返す
     @Logger.logging
-    def __commit(self, date, attrs):
-        leaf, inners = self.tb.build(attrs)
+    def commit_task(self, date, attrs):
 
-        # 葉ノードタスクトリをコミットする
-        org = Tasktory.restore(leaf.path)
-        if org is None:
-            leaf.sync()
-        else:
-            # マージする前に当日の作業時間を削除する
-            org.timetable = [t for t in org.timetable if not t.at(date)]
-            org.merge(leaf).sync()
+        # コミットしたタスクの数
+        commit_num = 0
 
-        # 内部ノードタスクトリをコミットする
+        # タスクを作成する
+        leafs, inners = zip(*(self.tb.build(attr) for attr in attrs))
+
+        # 当日の午前零時から翌日の午前零時
+        a = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
+        b = a + datetime.timedelta(1)
+
+        # 葉ノードは変更があるもののみコミットする
+        for task in leafs:
+            # 存在しなければコミットする
+            if not Tasktory.istask(task.path):
+                task.sync()
+                commit_num += 1
+                continue
+
+            # 既存のタスクを復元する
+            org = Tasktory.restore(task.path)
+
+            # 変更が無ければ無視する
+            c_d = org.deadline == task.deadline
+            c_s = org.status == task.status
+            c_t = set([t for t in org.timetable if a <= t[0] and t[0] < b]) ==\
+                set(task.timetable)
+            c_c = org.comment == task.comment
+            if all(c_d, c_s, c_t, c_c):
+                continue
+
+            # 当日分の作業時間を削除する
+            org.timetable =\
+                [t for t in org.timetable if not (a <= t[0] and t[0] < b)]
+
+            # マージしてコミットする
+            org.merge(task).sync()
+            commit_num += 1
+
+        # 内部ノードは存在しないもののみコミットする
         for t in inners:
-            org = Tasktory.restore(t.path)
-            if org is None:
+            if not Tasktory.istask(t.path):
                 t.sync()
+                commit_num += 1
+
+        return commit_num

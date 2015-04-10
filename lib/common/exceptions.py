@@ -24,8 +24,12 @@ class ExceptionMeta(type):
 
 class TasktoryError(Exception, metaclass=ExceptionMeta):
     """タスクトリエラーの基底クラス"""
+    def __init__(self, *args):
+        self.args = args
+        return
+
     def __str__(self):
-        return self.MSG
+        return self.MSG.format(*self.args)
 
     def __repr__(self):
         return self.__str__()
@@ -33,8 +37,12 @@ class TasktoryError(Exception, metaclass=ExceptionMeta):
 
 class TasktoryWarning(Warning, metaclass=ExceptionMeta):
     """タスクトリ警告の基底クラス"""
+    def __init__(self, *args):
+        self.args = args
+        return
+
     def __str__(self):
-        return self.MSG
+        return self.MSG.format(*self.args)
 
     def __repr__(self):
         return self.__str__()
@@ -64,7 +72,7 @@ class JournalParserOverlapTimeTableError(TasktoryError):
 
 
 class JournalManagerNoExistTaskOfMemoError(TasktoryError):
-    MSG = "存在しないタスクのメモが記載されています"
+    MSG = "存在しないタスクのメモが記載されています\n{}"
 
 
 # =============================================================================

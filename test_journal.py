@@ -3,7 +3,7 @@
 
 from datetime import date
 import configparser
-from lib.ui.journal.Journal import Journal
+from lib.ui.journal.JournalManager import JournalManager
 from lib.common.common import MAIN_CONF_FILE
 from lib.common.common import FILT_CONF_FILE
 
@@ -18,8 +18,10 @@ if __name__ == '__main__':
     # prepare date infomation
     today = date.today()
 
-    # create journal object
-    journal = Journal(config, filt_config)
+    # create journal manager object
+    jm = JournalManager(config, filt_config)
 
-    # journal.commit()
-    journal.checkout(today)
+    journal = jm.load(today)
+    jm.write(journal)
+    # journal = jm.read()
+    # jm.save(journal)
