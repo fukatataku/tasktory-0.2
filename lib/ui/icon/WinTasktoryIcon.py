@@ -5,6 +5,7 @@ import os
 from datetime import date
 import configparser
 from multiprocessing import Process
+import win32api
 from lib.ui.icon.WinTrayIcon import TrayIcon
 from lib.ui.journal.Journal import Journal
 from lib.monitor.WinFileMonitor import FileMonitor
@@ -21,7 +22,9 @@ class TasktoryIcon(TrayIcon):
 
     MSG_CHDIR = TrayIcon.MSG_NOTIFY + 1
     MSG_CHFILE = TrayIcon.MSG_NOTIFY + 2
+    MSG_UNLOCK = TrayIcon.MSG_NOTIFY + 3
 
+    # 例外処理デコレータ
     def exception(func):
         def wrapper(self, *args, **kwargs):
             try:
@@ -37,11 +40,26 @@ class TasktoryIcon(TrayIcon):
                 self.fatal("FATAL", str(e))
         return wrapper
 
+    # 排他制御デコレータ
+    def exclusion(func):
+        def wrapper(self, *args, **kwds):
+            if self.islock():
+                return False
+            self.lock()
+            func(self, *args, **kwds)
+            self.unlock()
+            return True
+        return wrapper
+
     def __init__(self):
+        # 排他制御
+        self.__lock = False
+
         # ウィンドウプロシージャ
         wp = {
                 self.MSG_CHDIR: self.chdir,
                 self.MSG_CHFILE: self.chfile,
+                self.MSG_UNLOCK: self.__unlock,
                 }
 
         # ポップアップメニュー
@@ -120,6 +138,7 @@ class TasktoryIcon(TrayIcon):
         return
 
     @exception
+    @exclusion
     @Logger.logging
     def sync(self):
         self.journal.commit()
@@ -128,6 +147,7 @@ class TasktoryIcon(TrayIcon):
         return
 
     @exception
+    @exclusion
     @Logger.logging
     def chdir(self, hwnd, msg, wparam, lparam):
         self.journal.checkout(date.today())
@@ -135,8 +155,30 @@ class TasktoryIcon(TrayIcon):
         return
 
     @exception
+    @exclusion
     @Logger.logging
     def chfile(self, hwnd, msg, wparam, lparam):
-        self.journal.commit()
-        self.popup("INFO", "ファイルシステムを更新しました")
+        t, m = self.journal.commit()
+        self.popup(
+            "INFO",
+            "{}個のタスクと{}個のメモをコミットしました".format(t, m))
+        return
+
+    @Logger.logging
+    def islock(self):
+        return self.__lock
+
+    @Logger.logging
+    def lock(self):
+        self.__lock = True
+        return
+
+    @Logger.logging
+    def unlock(self):
+        win32api.SendMessage(self.hwnd, self.MSG_UNLOCK, None, None)
+        return
+
+    @Logger.logging
+    def __unlock(self, hwnd, msg, wparam, lparam):
+        self.__lock = False
         return
