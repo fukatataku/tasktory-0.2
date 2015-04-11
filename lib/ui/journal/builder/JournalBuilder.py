@@ -15,7 +15,7 @@ class JournalBuilder(Logger):
         super().__init__()
 
     @Logger.logging
-    def build(self, date, tasks):
+    def build(self, date, tasks, memo):
         self.tcb = TaskChunkBuilder(date, self.config)
         return self.template.substitute({
             'YEAR': date.year, 'MONTH': date.month, 'DAY': date.day,
@@ -25,5 +25,5 @@ class JournalBuilder(Logger):
                 [t for t in tasks if t.status == Tasktory.WAIT]),
             'CLOSECHUNK': self.tcb.build(
                 [t for t in tasks if t.status == Tasktory.CLOSE]),
-            'MEMO': '',
+            'MEMO': memo,
             })

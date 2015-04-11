@@ -31,9 +31,8 @@ class Journal(Logger):
 
     @Logger.logging
     def checkout(self, date):
-        # TODO チェックアウト時にメモを残す？
         # 既存のジャーナルからメモを読み出す
-        # _, _, memo_list = self.read()
+        _, _, _, plain_memo = self.read()
 
         # ファイルシステムからタスクを復元する
         root_task = Tasktory.restore(self.root)
@@ -50,13 +49,13 @@ class Journal(Logger):
 
         # ジャーナルを書き出す
         with open(self.journal, 'w', encoding='utf-8') as f:
-            f.write(self.jb.build(date, tasks))
+            f.write(self.jb.build(date, tasks, plain_memo))
 
     @Logger.logging
     def read(self):
         # ジャーナルが存在しなければNoneを返す?
         if not os.path.isfile(self.journal):
-            return datetime.datetime.now(), [], []
+            return datetime.datetime.now(), [], [], ""
 
         # ジャーナルを読み出す
         with open(self.journal, 'r', encoding='utf-8-sig') as f:
@@ -68,7 +67,7 @@ class Journal(Logger):
     @Logger.logging
     def commit(self):
         # ジャーナルを解析する
-        date, attrs, memos = self.read()
+        date, attrs, memos, _ = self.read()
 
         # ファイルシステムにコミットする
         commit_task_num = self.commit_task(date, attrs)

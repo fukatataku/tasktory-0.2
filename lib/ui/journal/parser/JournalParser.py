@@ -57,7 +57,7 @@ class JournalParser(Logger):
         # メモを取得
         memo = self.mp.parse(attrs['MEMO'])
 
-        return date, tasks, memo
+        return date, tasks, memo, attrs["MEMO"]
 
     @staticmethod
     def duplicate_task(tasks):

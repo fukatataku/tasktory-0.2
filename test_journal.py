@@ -22,5 +22,5 @@ if __name__ == '__main__':
     journal = Journal(config, filt_config)
 
     # TEST
-    journal.commit()
+    # journal.commit()
     journal.checkout(today)
