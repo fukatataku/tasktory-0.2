@@ -10,7 +10,7 @@ class TimeTableBuilder(Logger):
 
     def __init__(self, date, config):
         t00 = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
-        t24 = self.t00 + datetime.timedelta(1)
+        t24 = t00 + datetime.timedelta(1)
         self.t00 = int(t00.timestamp())
         self.t24 = int(t24.timestamp())
         self.template = Regexplate(config['Journal']['TIME'])

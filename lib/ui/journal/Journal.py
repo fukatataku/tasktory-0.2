@@ -75,7 +75,7 @@ class Journal(Logger):
 
         # メモのタスクが存在するか確認する
         for memo in memos:
-            if Tasktory.istask(memo["PATH"]):
+            if not Tasktory.istask(memo["PATH"]):
                 raise JournalManagerNoExistTaskOfMemoError(memo["PATH"])
 
         # メモをコミットする
@@ -95,7 +95,10 @@ class Journal(Logger):
         commit_num = 0
 
         # タスクを作成する
+        if not attrs:
+            return 0
         leafs, inners = zip(*(self.tb.build(attr) for attr in attrs))
+        # leafs, inners = zip(*map(self.tb.build, attrs))
 
         # 当日の午前零時から翌日の午前零時
         a = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
@@ -103,11 +106,11 @@ class Journal(Logger):
         a = int(a.timestamp())
         b = int(b.timestamp())
 
-        def at_date(s):
-            return a <= s and s < b
+        def at_date(t):
+            return a <= t[0] and t[0] < b
 
         # 内部ノードは存在しないもののみコミットする
-        for task in inners:
+        for task in sum(inners, []):
             if not Tasktory.istask(task.path):
                 task.sync()
                 commit_num += 1
@@ -126,16 +129,16 @@ class Journal(Logger):
             org = Tasktory.restore(task.path)
 
             # 変更が無ければ無視する
-            c_d = org.deadline == task.deadline
-            c_s = org.status == task.status
-            c_t = set(filter(at_date, org.timetable)) == set(task.timetable)
-            c_c = org.comment == task.comment
-            if all(c_d, c_s, c_t, c_c):
+            if all([
+                    org.deadline == task.deadline,
+                    org.status == task.status,
+                    set(filter(at_date, org.timetable)) == set(task.timetable),
+                    org.comment == task.comment,
+                    ]):
                 continue
 
             # 当日分の作業時間を削除する
-            org.timetable =\
-                [t for t in org.timetable if not (a <= t[0] and t[0] < b)]
+            org.timetable = [t for t in org.timetable if not at_date(t)]
 
             # マージしてコミットする
             org.merge(task).sync()
