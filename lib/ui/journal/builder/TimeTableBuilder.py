@@ -9,9 +9,10 @@ from lib.log.Logger import Logger
 class TimeTableBuilder(Logger):
 
     def __init__(self, date, config):
-        self.year = date.year
-        self.month = date.month
-        self.day = date.day
+        t00 = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
+        t24 = self.t00 + datetime.timedelta(1)
+        self.t00 = int(t00.timestamp())
+        self.t24 = int(t24.timestamp())
         self.template = Regexplate(config['Journal']['TIME'])
         self.delim = config['Journal']['DELIM']
         super().__init__()
@@ -23,9 +24,7 @@ class TimeTableBuilder(Logger):
 
     @Logger.logging
     def at_date(self, ts):
-        a = datetime.datetime(self.year, self.month, self.day, 0, 0, 0)
-        b = a + datetime.timedelta(1)
-        return int(a.timestamp()) <= ts and ts < int(b.timestamp())
+        return self.t00 <= ts and ts < self.t24
 
     @Logger.logging
     def time_map(self, s, e):

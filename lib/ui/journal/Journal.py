@@ -80,12 +80,11 @@ class Journal(Logger):
 
         # メモをコミットする
         now = datetime.datetime.now()
-        results = [
-                Tasktory.restore(memo["PATH"]).memo.put(now, memo["TEXT"])
-                for memo in memos]
-        commit_memo_num = len([b for b in results if b])
+        for memo in memos:
+            Tasktory.restore(memo["PATH"]).memo.put(now, memo["TEXT"])
+            self.info("MEMO", memo["PATH"])
 
-        return commit_task_num, commit_memo_num
+        return commit_task_num, len(memos)
 
     # タスクをコミットする
     # コミットしたタスクの数を返す
@@ -101,6 +100,18 @@ class Journal(Logger):
         # 当日の午前零時から翌日の午前零時
         a = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
         b = a + datetime.timedelta(1)
+        a = int(a.timestamp())
+        b = int(b.timestamp())
+
+        def at_date(s):
+            return a <= s and s < b
+
+        # 内部ノードは存在しないもののみコミットする
+        for task in inners:
+            if not Tasktory.istask(task.path):
+                task.sync()
+                commit_num += 1
+                self.info("CREATE", str(task))
 
         # 葉ノードは変更があるもののみコミットする
         for task in leafs:
@@ -108,6 +119,7 @@ class Journal(Logger):
             if not Tasktory.istask(task.path):
                 task.sync()
                 commit_num += 1
+                self.info("CREATE", str(task))
                 continue
 
             # 既存のタスクを復元する
@@ -116,8 +128,7 @@ class Journal(Logger):
             # 変更が無ければ無視する
             c_d = org.deadline == task.deadline
             c_s = org.status == task.status
-            c_t = set([t for t in org.timetable if a <= t[0] and t[0] < b]) ==\
-                set(task.timetable)
+            c_t = set(filter(at_date, org.timetable)) == set(task.timetable)
             c_c = org.comment == task.comment
             if all(c_d, c_s, c_t, c_c):
                 continue
@@ -129,11 +140,6 @@ class Journal(Logger):
             # マージしてコミットする
             org.merge(task).sync()
             commit_num += 1
-
-        # 内部ノードは存在しないもののみコミットする
-        for t in inners:
-            if not Tasktory.istask(t.path):
-                t.sync()
-                commit_num += 1
+            self.info("UPDATE", str(task))
 
         return commit_num
