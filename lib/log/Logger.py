@@ -5,6 +5,7 @@ import datetime
 import inspect
 from lib.common.common import LOG_DIR
 from lib.common.common import LOG_FILE
+from lib.common.common import LOG_LEVEL
 
 
 class Logger:
@@ -44,27 +45,32 @@ class Logger:
     # 基本ロギングメソッド
     @classmethod
     def debug(cls, event, msg, r=1, caller=None):
-        cls.__putlog(cls.__logline("DEBUG", event, msg, r+1, caller))
+        if LOG_LEVEL <= 0:
+            cls.__putlog(cls.__logline("DEBUG", event, msg, r+1, caller))
         return
 
     @classmethod
     def info(cls, event, msg, r=1, caller=None):
-        cls.__putlog(cls.__logline("INFO", event, msg, r+1, caller))
+        if LOG_LEVEL <= 1:
+            cls.__putlog(cls.__logline("INFO", event, msg, r+1, caller))
         return
 
     @classmethod
     def warn(cls, event, msg, r=1, caller=None):
-        cls.__putlog(cls.__logline("WARN", event, msg, r+1, caller))
+        if LOG_LEVEL <= 2:
+            cls.__putlog(cls.__logline("WARN", event, msg, r+1, caller))
         return
 
     @classmethod
     def error(cls, event, msg, r=1, caller=None):
-        cls.__putlog(cls.__logline("ERROR", event, msg, r+1, caller))
+        if LOG_LEVEL <= 3:
+            cls.__putlog(cls.__logline("ERROR", event, msg, r+1, caller))
         return
 
     @classmethod
     def fatal(cls, event, msg, r=1, caller=None):
-        cls.__putlog(cls.__logline("FATAL", event, msg, r+1, caller))
+        if LOG_LEVEL <= 4:
+            cls.__putlog(cls.__logline("FATAL", event, msg, r+1, caller))
         return
 
     # 抽象ロギングメソッド

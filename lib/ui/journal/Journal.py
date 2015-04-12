@@ -30,7 +30,7 @@ class Journal(Logger):
         return
 
     @Logger.logging
-    def checkout(self, date):
+    def checkout(self):
         # 既存のジャーナルからメモを読み出す
         _, _, _, plain_memo = self.read()
 
@@ -49,7 +49,7 @@ class Journal(Logger):
 
         # ジャーナルを書き出す
         with open(self.journal, 'w', encoding='utf-8') as f:
-            f.write(self.jb.build(date, tasks, plain_memo))
+            f.write(self.jb.build(datetime.date.today(), tasks, plain_memo))
 
     @Logger.logging
     def read(self):
@@ -80,8 +80,8 @@ class Journal(Logger):
         # メモをコミットする
         now = datetime.datetime.now()
         for memo in memos:
-            Tasktory.restore(memo["PATH"]).memo.put(now, memo["TEXT"])
-            self.info("MEMO", memo["PATH"])
+            if Tasktory.restore(memo["PATH"]).memo.put(now, memo["TEXT"]):
+                self.info("MEMO", memo["PATH"])
 
         return commit_task_num, len(memos)
 

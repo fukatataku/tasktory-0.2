@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from datetime import date
 import configparser
 from lib.ui.journal.Journal import Journal
 from lib.common.common import MAIN_CONF_FILE
@@ -15,12 +14,9 @@ if __name__ == '__main__':
     filt_config = configparser.ConfigParser()
     filt_config.read(FILT_CONF_FILE)
 
-    # prepare date infomation
-    today = date.today()
-
     # create journal manager object
     journal = Journal(config, filt_config)
 
     # TEST
-    # journal.commit()
-    journal.checkout(today)
+    journal.commit()
+    journal.checkout()
