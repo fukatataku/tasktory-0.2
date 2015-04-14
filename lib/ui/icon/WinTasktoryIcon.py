@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from datetime import date
 import configparser
 from multiprocessing import Process
 import win32api
@@ -98,7 +97,7 @@ class TasktoryIcon(TrayIcon):
 
         # ジャーナル
         self.journal = Journal(config, filt_config)
-        self.journal.checkout(date.today())
+        self.journal.checkout()
 
         # モニタープロセス作成
         self.file_monitor = Process(
@@ -142,7 +141,7 @@ class TasktoryIcon(TrayIcon):
     @Logger.logging
     def sync(self):
         self.journal.commit()
-        self.journal.checkout(date.today())
+        self.journal.checkout()
         self.popup("INFO", "ジャーナルとファイルシステムを同期しました")
         return
 
@@ -150,7 +149,7 @@ class TasktoryIcon(TrayIcon):
     @exclusion
     @Logger.logging
     def chdir(self, hwnd, msg, wparam, lparam):
-        self.journal.checkout(date.today())
+        self.journal.checkout()
         self.popup("INFO", "ジャーナルを更新しました")
         return
 
