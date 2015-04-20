@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DESIGN</title>
+  <style type="text/css">
+body {
+  /* 色 */
+  background-color: #A8A8A8;
+}
+
+div.top {
+  /* 位置関係 */
+  margin-bottom: 10px;
+}
+
+div.middle {
+  /* 大きさ */
+  /*height: 600px;*/
+  width: 1750px;
+}
+
+div.taskpane {
+  /* 大きさ */
+  /*height: 600px;*/
+  width: 300px;
+
+  /* 配置 */
+  float: left;
+
+  /* 位置関係 */
+  margin-right: 5px;
+}
+
+div.taskpane-header {
+}
+
+div.taskpane-body {
+  /* 大きさ */
+  /*height: 575px;*/
+
+  /* 背景色 */
+  background-color: white;
+
+  /* 枠デザイン */
+  border: 1px solid blue;
+}
+
+div.task {
+  /* 大きさ */
+  height: 30px;
+
+  /* 枠デザイン */
+  border-bottom: 1px dashed blue;
+}
+
+div.timetable {
+  /* 大きさ */
+  /*height: 600px;*/
+
+  /* 配置 */
+  float: left;
+}
+
+div.timetable-header {
+  /* 大きさ */
+  width: 1442px;
+}
+
+div.dial {
+  /* 大きさ */
+  width: 25px;
+
+  /* 配置 */
+  float: left;
+
+  /* 位置関係 */
+  margin-right: 35px;
+}
+
+div.timetable-body {
+  /* 大きさ */
+  /*height: 575px;*/
+  width: 1442px;
+
+  /* デザイン */
+  border-top: 1px solid blue;
+  border-bottom: 1px solid blue;
+  background-color: white;
+  background-image:
+    linear-gradient(to right, blue 2px, transparent 2px),
+    linear-gradient(to right, blue 1px, transparent 1px),
+    linear-gradient(to bottom, white 2px, transparent 2px),
+    linear-gradient(to right, blue 1px, transparent 1px);
+  background-size:
+    60px 100%,
+    30px 100%,
+    100% 5px,
+    10px 100%;
+  background-position:
+    +0px 0px,
+    +0px 0px,
+    +0px 0px,
+    +0px 0px;
+
+  /* 配置 */
+  clear: both;
+
+  /* 位置関係 */
+  margin-bottom: 10px;
+}
+
+div.timeline {
+  /* 大きさ */
+  height: 30px;
+
+  /* 枠デザイン */
+  border-bottom: 1px dashed blue;
+}
+
+div.term {
+  /* 大きさ */
+  height: 20px;
+
+  /* 配置 */
+  position: relative;
+  float: left;
+
+  /* デザイン */
+  border: 1px solid red;
+  border-radius: 5px;
+  background-color: rgba(255, 0, 0, 0.5);
+
+  /* 位置関係 */
+  margin-top: 5px;
+}
+
+div.bottom {
+  background-color: cyan;
+
+  /* 配置 */
+  clear: both;
+
+  /* 位置関係 */
+  margin-top: 10px;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="top">
+    {{ today.strftime("%Y/%m/%d") }}
+  </div>
+  <div class="middle">
+    <div class="taskpane">
+      <div class="taskpane-header">
+        タスク一覧
+      </div>
+      <div class="taskpane-body">
+        {% for task in tasks -%}
+        <div class="task">{{ task.short_path(root) }}</div>
+        {% endfor -%}
+      </div>
+    </div>
+    <div class="timetable">
+      <div class="timetable-header">
+        <div class="dial">00</div>
+        <div class="dial">01</div>
+        <div class="dial">02</div>
+        <div class="dial">03</div>
+        <div class="dial">04</div>
+        <div class="dial">05</div>
+        <div class="dial">06</div>
+        <div class="dial">07</div>
+        <div class="dial">08</div>
+        <div class="dial">09</div>
+        <div class="dial">10</div>
+        <div class="dial">11</div>
+        <div class="dial">12</div>
+        <div class="dial">13</div>
+        <div class="dial">14</div>
+        <div class="dial">15</div>
+        <div class="dial">16</div>
+        <div class="dial">17</div>
+        <div class="dial">18</div>
+        <div class="dial">19</div>
+        <div class="dial">20</div>
+        <div class="dial">21</div>
+        <div class="dial">22</div>
+        <div class="dial">23</div>
+      </div>
+      <div class="timetable-body">
+        {% for task in tasks -%}
+        <div class="timeline">
+          {% set tmp = 0 -%}
+          {% for s,t in task.timetable -%}
+          {% if a <= s and s < b -%}
+          <div class="term" style="left: {{ (s-a)//60 - tmp }}px; width: {{ t//60 - 2 }}px;"></div>
+          {% set tmp = tmp + t//60 -%}
+          {% endif -%}
+          {% endfor -%}
+        </div>
+        {% endfor -%}
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    FOOTER
+  </div>
+</body>
+</html>

@@ -34,6 +34,14 @@ class Tasktory(Task):
     def __repr__(self):
         return "{}(path=\"{}\")".format(self.__class__.__name__, self.path)
 
+    # 参照系
+    @Logger.logging
+    def short_path(self, root):
+        if root not in self.path or self.path.index(root) != 0:
+            return self.path
+        else:
+            return self.path.replace(root, "")
+
     # 変更系
     @Logger.logging
     def sync(self):
