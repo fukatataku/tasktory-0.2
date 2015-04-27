@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from datetime import date
+import datetime
 import configparser
 from lib.core.Tasktory import Tasktory
 from lib.ui.journal.builder.TaskLineBuilder import TaskLineBuilder
-from lib.filter.TasktoryFilter import TasktoryFilter
+from lib.ui.journal.tester.JournalTester import JournalTester
 from lib.common.common import MAIN_CONF_FILE
-from lib.common.common import FILT_CONF_FILE
 
 
 if __name__ == '__main__':
@@ -15,30 +14,27 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(MAIN_CONF_FILE)
 
-    filt_config = configparser.ConfigParser()
-    filt_config.read(FILT_CONF_FILE)
-
     # today
-    today = date.today()
+    date = datetime.date.today() - datetime.timedelta(2)
 
     # TaskLineBuilder
-    builder = TaskLineBuilder(today, config)
+    builder = TaskLineBuilder(date, config)
 
     root_dir = config['Main']['ROOT']
     root_task = Tasktory.restore(root_dir)
     root_task = [] if root_task is None else root_task
 
     # Filter test
-    filters = TasktoryFilter.get_filter(filt_config['JournalFilter'])
+    tester = JournalTester()
+    tester.date = date
 
     # show all
     for task in root_task:
-        print(builder.build(task))
+        print(builder.build(task), task.status)
 
     # show separator
     print("\n==========\n")
 
     # show
-    tasks = filters.select(root_task)
-    for task in tasks:
+    for task in [t for t in root_task if tester.test(t)]:
         print(builder.build(task))

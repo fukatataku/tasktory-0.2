@@ -7,7 +7,7 @@ from lib.core.Tasktory import Tasktory
 from lib.ui.journal.builder.JournalBuilder import JournalBuilder
 from lib.ui.journal.builder.TasktoryBuilder import TasktoryBuilder
 from lib.ui.journal.parser.JournalParser import JournalParser
-from lib.utility.filter.TasktoryFilter import TasktoryFilter
+from lib.ui.journal.tester.JournalTester import JournalTester
 from lib.common.common import unique
 from lib.common.common import JRNL_TMPL_FILE
 from lib.common.exceptions import JournalManagerNoExistTaskOfMemoError
@@ -17,12 +17,12 @@ from lib.log.Logger import Logger
 class Journal(Logger):
     """"""
 
-    def __init__(self, config, filt_config):
+    def __init__(self, config):
         with open(JRNL_TMPL_FILE) as f:
             tmpl = f.read()
         self.jb = JournalBuilder(tmpl, config)
         self.jp = JournalParser(tmpl, config)
-        self.jf = TasktoryFilter.get_filter(filt_config['JournalFilter'])
+        self.jt = JournalTester()
         self.tb = TasktoryBuilder(config)
         self.root = config['Main']['ROOT']
         self.journal = config['Main']['JOURNAL']
@@ -30,7 +30,7 @@ class Journal(Logger):
         return
 
     @Logger.logging
-    def checkout(self):
+    def checkout(self, date):
         # 既存のジャーナルからメモを読み出す
         _, _, _, plain_memo = self.read()
 
@@ -39,7 +39,8 @@ class Journal(Logger):
         if root_task is None:
             tasks = []
         else:
-            tasks = self.jf.select(root_task)
+            self.jt.date = date
+            tasks = [t for t in root_task if self.jt.test(t)]
 
         # tasksのuniqを取る
         tasks = unique(tasks, lambda t: t.path)
@@ -49,7 +50,7 @@ class Journal(Logger):
 
         # ジャーナルを書き出す
         with open(self.journal, 'w', encoding='utf-8') as f:
-            f.write(self.jb.build(datetime.date.today(), tasks, plain_memo))
+            f.write(self.jb.build(date, tasks, plain_memo))
 
     @Logger.logging
     def read(self):
