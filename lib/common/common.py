@@ -21,6 +21,9 @@ LOG_FILE = join(LOG_DIR, "tasktory.%Y-%m-%d.log")
 LOG_LEVEL = 0   # DEBUG
 # LOG_LEVEL = 1   # INFO
 
+# URL Mapping
+URL_TIMETABLE = "/tasktory/timetable"
+
 
 def convolute(proc, iterable, start=0):
     rtn = []

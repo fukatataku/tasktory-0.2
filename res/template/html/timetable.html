@@ -150,7 +150,9 @@ div.bottom {
 
 <body>
   <div class="top">
+    <a href={{ path ~ "?date=" ~ (today.toordinal()-1) }}>＜前日</a>
     {{ today.strftime("%Y/%m/%d") }}
+    <a href={{ path ~ "?date=" ~ (today.toordinal()+1) }}>翌日＞</a>
   </div>
   <div class="middle">
     <div class="taskpane">
