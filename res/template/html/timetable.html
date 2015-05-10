@@ -250,7 +250,7 @@ div.bottom {
     var timetable = document.getElementById("tbody");
     var terms;
 
-    json += '[';
+    json += '{"date":{{ today.toordinal() }},"datas":[';
     for (var i=0; i<tasks.length; i++) {
       json += '{"path":"' + tasks[i].id + '","terms":[';
       terms = timetable.getElementsByClassName("term " + tasks[i].id);
@@ -267,7 +267,7 @@ div.bottom {
         json += ',';
       }
     }
-    json += ']';
+    json += ']}';
 
     /* データを送信する */
     var xhr = new XMLHttpRequest();
@@ -292,14 +292,16 @@ div.bottom {
       element = this;
       var org_x = e.clientX;
       document.onmousemove = function(ev) {
-        var p = element.parentNode;
-        /* 位置 */
-        var left = Number(p.style.left.substring(0, p.style.left.indexOf("px")));
-        p.style.left = String(left + ev.clientX - org_x) + "px";
-        /* 幅 */
-        var width = Number(p.style.width.substring(0, p.style.width.indexOf("px")));
-        p.style.width = String(width - ev.clientX + org_x) + "px";
-        org_x = ev.clientX;
+        if ((ev.clientX - org_x) % 5 == 0) {
+          var p = element.parentNode;
+          /* 位置 */
+          var left = Number(p.style.left.substring(0, p.style.left.indexOf("px")));
+          p.style.left = String(left + ev.clientX - org_x) + "px";
+          /* 幅 */
+          var width = Number(p.style.width.substring(0, p.style.width.indexOf("px")));
+          p.style.width = String(width - ev.clientX + org_x) + "px";
+          org_x = ev.clientX;
+        }
       };
     };
   }
@@ -311,10 +313,12 @@ div.bottom {
       element = this;
       var org_x = e.clientX;
       document.onmousemove = function(ev) {
-        var p = element.parentNode;
-        var width = Number(p.style.width.substring(0, p.style.width.indexOf("px")));
-        p.style.width = String(width + ev.clientX - org_x) + "px";
-        org_x = ev.clientX;
+        if ((ev.clientX - org_x) % 5 == 0) {
+          var p = element.parentNode;
+          var width = Number(p.style.width.substring(0, p.style.width.indexOf("px")));
+          p.style.width = String(width + ev.clientX - org_x) + "px";
+          org_x = ev.clientX;
+        }
       };
     };
   }

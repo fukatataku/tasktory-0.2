@@ -15,8 +15,25 @@ from lib.common.common import URL_SYNC
 
 @route(URL_SYNC, method="post")
 def sync():
-    print("=== TEST ===")
-    print(request.json)
+    # コンフィグ読み込み
+    config = configparser.ConfigParser()
+    config.read(MAIN_CONF_FILE)
+    root_path = config["Main"]["ROOT"]
+
+    # テスト
+    day0 = datetime.datetime.fromordinal(request.json["date"])
+    day1 = day0 + datetime.timedelta(1)
+    ts0 = int(day0.timestamp())
+    ts1 = int(day1.timestamp())
+    for data in request.json["datas"]:
+        task = Tasktory.restore(root_path + data["path"])
+        print(task.path)
+        for s, t in filter(lambda v: ts0 <= v[0] < ts1, task.timetable):
+            print(s, t)
+        print()
+        for term in data["terms"]:
+            print(ts0 + term["s"] * 60, term["t"] * 60)
+        print()
     return
 
 
