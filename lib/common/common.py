@@ -23,6 +23,7 @@ LOG_LEVEL = 0   # DEBUG
 
 # URL Mapping
 URL_TIMETABLE = "/tasktory/timetable"
+URL_SYNC = "/tasktory/sync"
 
 
 def convolute(proc, iterable, start=0):

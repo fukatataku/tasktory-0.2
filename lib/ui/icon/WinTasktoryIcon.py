@@ -8,6 +8,7 @@ from multiprocessing import Process
 import win32api
 from lib.ui.icon.WinTrayIcon import TrayIcon
 from lib.ui.journal.Journal import Journal
+from lib.ui.web.web import start
 from lib.monitor.WinFileMonitor import FileMonitor
 from lib.monitor.WinDirectoryMonitor import DirectoryMonitor
 from lib.common.common import MAIN_CONF_FILE
@@ -118,6 +119,10 @@ class TasktoryIcon(TrayIcon):
         self.file_monitor.start()
         self.dir_monitor.start()
 
+        # WebUIプロセス作成／開始
+        self.web = Process(target=start, args=())
+        self.web.start()
+
         # メッセージループ開始
         self.run()
         return
@@ -134,6 +139,7 @@ class TasktoryIcon(TrayIcon):
     def destroy(self):
         self.file_monitor.terminate()
         self.dir_monitor.terminate()
+        self.web.terminate()
         super().destroy()
         return
 

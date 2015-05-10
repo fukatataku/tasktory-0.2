@@ -10,6 +10,14 @@ from lib.core.Tasktory import Tasktory
 from lib.common.common import MAIN_CONF_FILE
 from lib.common.common import HTML_DIR
 from lib.common.common import URL_TIMETABLE
+from lib.common.common import URL_SYNC
+
+
+@route(URL_SYNC, method="post")
+def sync():
+    print("=== TEST ===")
+    print(request.json)
+    return
 
 
 @route(URL_TIMETABLE)

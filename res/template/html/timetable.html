@@ -135,9 +135,35 @@ div.term {
   margin-top: 5px;
 }
 
-div.bottom {
-  background-color: cyan;
+div.extend_button {
+  border: 1px solid #202020;
+  border-radius: 5px;
+  background-color: #404040;
+  width: 5px;
+}
 
+div.extend_button:hover {
+  border: 1px solid #404040;
+  background-color: #606060;
+}
+
+div.left_side {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+div.right_side {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+div.bottom {
   /* 配置 */
   clear: both;
 
@@ -161,7 +187,7 @@ div.bottom {
       </div>
       <div class="taskpane-body">
         {% for task in tasks -%}
-        <div class="task">{{ task.short_path(root) }}</div>
+        <div class="task" id="{{ task.short_path(root) }}">{{ task.short_path(root) }}</div>
         {% endfor -%}
       </div>
     </div>
@@ -192,13 +218,16 @@ div.bottom {
         <div class="dial">22</div>
         <div class="dial">23</div>
       </div>
-      <div class="timetable-body">
+      <div class="timetable-body", id="tbody">
         {% for task in tasks -%}
         <div class="timeline">
           {% set tmp = 0 -%}
           {% for s,t in task.timetable -%}
           {% if a <= s and s < b -%}
-          <div class="term" style="left: {{ (s-a)//60 - tmp }}px; width: {{ t//60 - 2 }}px;"></div>
+          <div class="term {{ task.short_path(root) }}" style="left: {{ (s-a)//60 - tmp }}px; width: {{ t//60 - 2 }}px;">
+            <div class="extend_button left_side" id=""></div>
+            <div class="extend_button right_side" id=""></div>
+          </div>
           {% set tmp = tmp + t//60 -%}
           {% endif -%}
           {% endfor -%}
@@ -207,8 +236,95 @@ div.bottom {
       </div>
     </div>
   </div>
+
+  <script type="text/javascript">
+<!--
+  function px2num(pixel) {
+    return Number(pixel.substring(0, pixel.indexOf("px")));
+  }
+
+  function send() {
+    /* JSON文字列を作成する */
+    var json = "";
+    var tasks = document.getElementsByClassName("task");
+    var timetable = document.getElementById("tbody");
+    var terms;
+
+    json += '[';
+    for (var i=0; i<tasks.length; i++) {
+      json += '{"path":"' + tasks[i].id + '","terms":[';
+      terms = timetable.getElementsByClassName("term " + tasks[i].id);
+      for (var j=0; j<terms.length; j++) {
+        json += '{"s":' + String(px2num(terms[j].style.left)) + ',';
+        json += '"t":' + String(px2num(terms[j].style.width) + 2);
+        json += '}';
+        if (j+1<terms.length) {
+          json += ',';
+        }
+      }
+      json += ']}';
+      if (i+1<tasks.length) {
+        json += ',';
+      }
+    }
+    json += ']';
+
+    /* データを送信する */
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:8080/tasktory/sync");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(json);
+  }
+//-->
+  </script>
+
   <div class="bottom">
-    FOOTER
+    <button onclick="send();">同期</button>
   </div>
+
+  <script type="text/javascript">
+<!--
+(function() {
+  /* 左ボタン */
+  var elements = document.getElementsByClassName("extend_button left_side");
+  for (var i=0; i<elements.length; i++) {
+    elements[i].onmousedown = function(e) {
+      element = this;
+      var org_x = e.clientX;
+      document.onmousemove = function(ev) {
+        var p = element.parentNode;
+        /* 位置 */
+        var left = Number(p.style.left.substring(0, p.style.left.indexOf("px")));
+        p.style.left = String(left + ev.clientX - org_x) + "px";
+        /* 幅 */
+        var width = Number(p.style.width.substring(0, p.style.width.indexOf("px")));
+        p.style.width = String(width - ev.clientX + org_x) + "px";
+        org_x = ev.clientX;
+      };
+    };
+  }
+
+  /* 右ボタン */
+  var elements = document.getElementsByClassName("extend_button right_side");
+  for (var i=0; i<elements.length; i++) {
+    elements[i].onmousedown = function(e) {
+      element = this;
+      var org_x = e.clientX;
+      document.onmousemove = function(ev) {
+        var p = element.parentNode;
+        var width = Number(p.style.width.substring(0, p.style.width.indexOf("px")));
+        p.style.width = String(width + ev.clientX - org_x) + "px";
+        org_x = ev.clientX;
+      };
+    };
+  }
+
+  /* ボタンアップ時に、マウス移動イベントを削除する */
+  document.onmouseup = function(e) {
+    document.onmousemove = null;
+  };
+})();
+//-->
+  </script>
 </body>
 </html>
