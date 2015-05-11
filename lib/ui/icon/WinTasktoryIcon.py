@@ -12,7 +12,6 @@ from lib.ui.web.web import start
 from lib.monitor.WinFileMonitor import FileMonitor
 from lib.monitor.WinDirectoryMonitor import DirectoryMonitor
 from lib.common.common import MAIN_CONF_FILE
-from lib.common.common import FILT_CONF_FILE
 from lib.common.common import ICON_IMG_FILE
 from lib.common.exceptions import TasktoryError
 from lib.common.exceptions import TasktoryWarning
@@ -89,8 +88,6 @@ class TasktoryIcon(TrayIcon):
         # コンフィグ
         config = configparser.ConfigParser()
         config.read(MAIN_CONF_FILE)
-        filt_config = configparser.ConfigParser()
-        filt_config.read(FILT_CONF_FILE)
 
         # ディレクトリを作成する
         root_dir = config["Main"]["ROOT"]
@@ -98,7 +95,7 @@ class TasktoryIcon(TrayIcon):
             os.makedirs(root_dir)
 
         # ジャーナル
-        self.journal = Journal(config, filt_config)
+        self.journal = Journal(config)
         self.journal.checkout(datetime.date.today())
 
         # モニタープロセス作成
